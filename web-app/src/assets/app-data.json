@@ -184,9 +184,7 @@
           "text": "status",
           "i18n": "menu.advanced.status",
           "icon": "anticon-mobile",
-          "link": "/setting/status",
-          "badgeDot": true,
-          "badge": 1
+          "link": "/setting/status"
         },
         {
           "text": "collector",
@@ -204,7 +202,21 @@
           "text": "plugin",
           "i18n": "menu.advanced.plugin",
           "icon": "anticon-usb",
-          "link": "/plugin"
+          "link": "/plugin/custom-plugin",
+          "children": [
+            {
+            "text": "plugin",
+            "i18n": "menu.advanced.plugin",
+            "icon": "anticon-usb",
+            "link": "/plugin/official-plugin"
+            },
+            {
+              "text": "plugin",
+              "i18n": "menu.advanced.plugin",
+              "icon": "anticon-usb",
+              "link": "/plugin/official-plugin"
+            }
+          ]
         }
       ]
     },
