@@ -23,6 +23,8 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.Set;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Value;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 
 /**

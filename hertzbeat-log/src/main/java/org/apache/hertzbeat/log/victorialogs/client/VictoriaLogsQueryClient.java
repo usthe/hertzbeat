@@ -18,6 +18,8 @@
 package org.apache.hertzbeat.log.victorialogs.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.log.victorialogs.config.VictoriaLogsProperties;
 import org.apache.hertzbeat.log.victorialogs.model.LogQueryResponse;
@@ -37,6 +39,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import org.springframework.web.util.UriUtils;
 
 @Slf4j
 @Component
@@ -77,7 +80,7 @@ public class VictoriaLogsQueryClient {
      */
     public List<LogQueryResponse> query(LogQueryRequest request) {
         String url = buildQueryUrl(request);
-        log.debug("Executing query: {}", url);
+        log.info("Executing query: {}", url);
 
         try {
             String response = restTemplate.getForObject(url, String.class);
@@ -153,23 +156,30 @@ public class VictoriaLogsQueryClient {
      * Build URL for regular queries
      */
     private String buildQueryUrl(LogQueryRequest request) {
-        UriComponentsBuilder builder = UriComponentsBuilder
-                .fromHttpUrl(properties.url())
-                .path(QUERY)
-                .queryParam("query", request.getQuery());
+        // 不使用 UriComponentsBuilder，因为它可能会导致多次编码
+        StringBuilder urlBuilder = new StringBuilder(properties.url())
+                .append("/select/logsql/query?query=");
 
+        // 只编码一次查询参数
+        urlBuilder.append(URLEncoder.encode(request.getQuery(), StandardCharsets.UTF_8));
+
+        // 添加其他参数
         if (StringUtils.hasText(request.getStart())) {
-            builder.queryParam("start", request.getStart());
+            urlBuilder.append("&start=").append(URLEncoder.encode(request.getStart(), StandardCharsets.UTF_8));
         }
         if (StringUtils.hasText(request.getEnd())) {
-            builder.queryParam("end", request.getEnd());
+            urlBuilder.append("&end=").append(URLEncoder.encode(request.getEnd(), StandardCharsets.UTF_8));
         }
         if (request.getLimit() != null) {
-            builder.queryParam("limit", request.getLimit());
+            urlBuilder.append("&limit=").append(request.getLimit());
+        } else {
+            urlBuilder.append("&limit=500");
         }
 
-        return builder.build().encode().toUriString();
+        return urlBuilder.toString();
     }
+
+
 
     /**
      * Build URL for count queries
