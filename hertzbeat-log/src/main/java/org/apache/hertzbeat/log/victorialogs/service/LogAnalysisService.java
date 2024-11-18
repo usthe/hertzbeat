@@ -115,19 +115,16 @@ public class LogAnalysisService {
 
         // Set up completion callback
         emitter.onCompletion(() -> {
-            log.debug("SSE completed");
             cleanup(emitter, heartbeatFuture);
         });
 
         // Set up timeout callback
         emitter.onTimeout(() -> {
-            log.debug("SSE timeout");
             cleanup(emitter, heartbeatFuture);
         });
 
         // Set up error callback
         emitter.onError(ex -> {
-            log.error("SSE error", ex);
             cleanup(emitter, heartbeatFuture);
         });
     }

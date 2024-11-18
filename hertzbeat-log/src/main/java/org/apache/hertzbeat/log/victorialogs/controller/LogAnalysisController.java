@@ -49,7 +49,7 @@ public class LogAnalysisController {
     private LogAnalysisService logAnalysisService;
 
     @Operation(summary = "Search logs", description = "Search logs with query parameters")
-    @GetMapping(value = "/search", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/query", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Message<List<LogQueryResponse>>> searchLogs(
             @Parameter(description = "Log query expression", required = true)
             @RequestParam @NotBlank String query,
@@ -112,15 +112,15 @@ public class LogAnalysisController {
         }
     }
 
-    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/tail", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamLogs(@RequestParam String query) {
-        SseEmitter emitter = new SseEmitter(180000L); // 3 minutes timeout
+        SseEmitter emitter = new SseEmitter(0L);
         logAnalysisService.streamLogs(query, emitter);
         return emitter;
     }
 
     @Operation(summary = "Stop all streams", description = "Stop all active log streams")
-    @PostMapping(value = "/stream/stop", produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/tail/stop", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Message<String>> stopAllStreams() {
         try {
             logAnalysisService.stopAllStreams();
@@ -132,7 +132,7 @@ public class LogAnalysisController {
     }
 
     @Operation(summary = "Get active stream count", description = "Get the number of active log streams")
-    @GetMapping(value = "/stream/count", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/tail/count", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Message<Integer>> getActiveStreamCount() {
         try {
             int count = logAnalysisService.getActiveStreamCount();
