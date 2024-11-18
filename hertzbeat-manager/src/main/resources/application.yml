@@ -211,6 +211,11 @@ grafana:
   username: admin
   password: admin
 
+log:
+  victoria-logs:
+    enabled: true
+    url: http://localhost:9428
+
 # See the documentation for details : https://hertzbeat.apache.org/zh-cn/docs/help/aiConfig
 ai:
   # AI Type:zhiPu、alibabaAi、kimiAi、sparkDesk

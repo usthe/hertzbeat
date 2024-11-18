@@ -84,6 +84,11 @@
             <groupId>org.apache.hertzbeat</groupId>
             <artifactId>hertzbeat-grafana</artifactId>
         </dependency>
+        <!-- log -->
+        <dependency>
+            <groupId>org.apache.hertzbeat</groupId>
+            <artifactId>hertzbeat-log</artifactId>
+        </dependency>
         <!-- spring -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -163,11 +168,6 @@
         <dependency>
             <groupId>com.usthe.sureness</groupId>
             <artifactId>spring-boot3-starter-sureness</artifactId>
-        </dependency>
-        <!-- okhttp -->
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
         </dependency>
         <!-- h2 database-->
         <dependency>
