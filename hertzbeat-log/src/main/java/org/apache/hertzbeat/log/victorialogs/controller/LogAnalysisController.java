@@ -32,11 +32,13 @@ import org.apache.hertzbeat.log.victorialogs.service.LogAnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import reactor.core.publisher.Flux;
 
 @Tag(name = "Log Analysis API")
 @RestController
@@ -49,23 +51,11 @@ public class LogAnalysisController {
     private LogAnalysisService logAnalysisService;
 
     @Operation(summary = "Search logs", description = "Search logs with query parameters")
-    @GetMapping(value = "/query", produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/query", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Message<List<LogQueryResponse>>> searchLogs(
-            @Parameter(description = "Log query expression", required = true)
-            @RequestParam @NotBlank String query,
-            @Parameter(description = "Start time for the query")
-            @RequestParam(required = false) String start,
-            @Parameter(description = "End time for the query")
-            @RequestParam(required = false) String end,
-            @Parameter(description = "Maximum number of results to return")
-            @RequestParam(required = false) Integer limit) {
+            @Parameter(description = "Log query parameters", required = true)
+            @RequestBody @Validated LogQueryRequest request) {
         try {
-            LogQueryRequest request = LogQueryRequest.builder()
-                    .query(query)
-                    .start(start)
-                    .end(end)
-                    .limit(limit)
-                    .build();
             List<LogQueryResponse> entries = logAnalysisService.searchLogs(request);
             return ResponseEntity.ok(Message.success(entries));
         } catch (Exception e) {
@@ -75,18 +65,16 @@ public class LogAnalysisController {
     }
 
     @Operation(summary = "Query log entries by keyword", description = "Search log entries containing specific keyword")
-    @GetMapping(value = "/query/keyword", produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/query/keyword", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Message<List<LogQueryResponse>>> queryByKeyword(
-            @Parameter(description = "Keyword to search for", required = true)
-            @RequestParam @NotBlank String keyword,
-            @Parameter(description = "Start time for the query")
-            @RequestParam(required = false) String start,
-            @Parameter(description = "End time for the query")
-            @RequestParam(required = false) String end,
-            @Parameter(description = "Maximum number of results to return")
-            @RequestParam(required = false) Integer limit) {
+            @Parameter(description = "Log query parameters", required = true)
+            @RequestBody @Validated LogQueryRequest request) {
         try {
-            List<LogQueryResponse> entries = logAnalysisService.queryByKeyword(keyword, start, end, limit);
+            List<LogQueryResponse> entries = logAnalysisService.queryByKeyword(
+                    request.getQuery(),
+                    request.getStart(),
+                    request.getEnd(),
+                    request.getLimit());
             return ResponseEntity.ok(Message.success(entries));
         } catch (Exception e) {
             log.error("query by keyword error", e);
@@ -95,16 +83,15 @@ public class LogAnalysisController {
     }
 
     @Operation(summary = "Count keyword occurrences", description = "Count occurrences of a keyword in logs")
-    @GetMapping(value = "/count/keyword", produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/count/keyword", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Message<Long>> countKeywordOccurrences(
-            @Parameter(description = "Keyword to count", required = true)
-            @RequestParam @NotBlank String keyword,
-            @Parameter(description = "Start time for the query")
-            @RequestParam(required = false) String start,
-            @Parameter(description = "End time for the query")
-            @RequestParam(required = false) String end) {
+            @Parameter(description = "Log query parameters", required = true)
+            @RequestBody @Validated LogQueryRequest request) {
         try {
-            long count = logAnalysisService.countKeywordOccurrences(keyword, start, end);
+            long count = logAnalysisService.countKeywordOccurrences(
+                    request.getQuery(),
+                    request.getStart(),
+                    request.getEnd());
             return ResponseEntity.ok(Message.success(count));
         } catch (Exception e) {
             log.error("count keyword occurrences error", e);
@@ -112,34 +99,11 @@ public class LogAnalysisController {
         }
     }
 
-    @GetMapping(value = "/tail", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter streamLogs(@RequestParam String query) {
-        SseEmitter emitter = new SseEmitter(0L);
-        logAnalysisService.streamLogs(query, emitter);
-        return emitter;
+    @PostMapping(value = "/tail", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<LogQueryResponse>> streamLogs(
+            @Parameter(description = "Log query parameters", required = true)
+            @RequestBody @Validated LogQueryRequest request) {
+        return logAnalysisService.streamLogs(request.getQuery());
     }
 
-    @Operation(summary = "Stop all streams", description = "Stop all active log streams")
-    @PostMapping(value = "/tail/stop", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Message<String>> stopAllStreams() {
-        try {
-            logAnalysisService.stopAllStreams();
-            return ResponseEntity.ok(Message.success("Successfully stopped all streams"));
-        } catch (Exception e) {
-            log.error("Failed to stop streams", e);
-            return ResponseEntity.ok(Message.fail(FAIL_CODE, "Failed to stop streams"));
-        }
-    }
-
-    @Operation(summary = "Get active stream count", description = "Get the number of active log streams")
-    @GetMapping(value = "/tail/count", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Message<Integer>> getActiveStreamCount() {
-        try {
-            int count = logAnalysisService.getActiveStreamCount();
-            return ResponseEntity.ok(Message.success(count));
-        } catch (Exception e) {
-            log.error("Failed to get stream count", e);
-            return ResponseEntity.ok(Message.fail(FAIL_CODE, "Failed to get stream count"));
-        }
-    }
 }

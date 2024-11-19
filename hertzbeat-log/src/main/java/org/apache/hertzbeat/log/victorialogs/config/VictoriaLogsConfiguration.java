@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * VictoriaLogs configuration class
@@ -46,7 +47,8 @@ public class VictoriaLogsConfiguration {
     public VictoriaLogsQueryClient victoriaLogsQueryClient(
             VictoriaLogsProperties properties,
             RestTemplateBuilder victoriaLogsRestTemplatebuilder,
-            ObjectMapper objectMapper) {
-        return new VictoriaLogsQueryClient(victoriaLogsRestTemplatebuilder, properties, objectMapper);
+            ObjectMapper objectMapper,
+            WebClient webClient) {
+        return new VictoriaLogsQueryClient(victoriaLogsRestTemplatebuilder, properties, objectMapper, webClient);
     }
 }

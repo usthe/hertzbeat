@@ -17,9 +17,12 @@
 
 package org.apache.hertzbeat.log.victorialogs.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.log.victorialogs.config.VictoriaLogsProperties;
 import org.apache.hertzbeat.log.victorialogs.model.LogQueryResponse;
@@ -27,10 +30,19 @@ import org.apache.hertzbeat.log.victorialogs.model.LogQueryRequest;
 import org.apache.hertzbeat.log.victorialogs.exception.VictoriaLogsQueryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.BufferedReader;
@@ -40,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import org.springframework.web.util.UriUtils;
+import reactor.core.publisher.Flux;
 
 @Slf4j
 @Component
@@ -60,17 +73,20 @@ public class VictoriaLogsQueryClient {
     private final RestTemplate restTemplate;
     private final VictoriaLogsProperties properties;
     private final ObjectMapper objectMapper;
+    private final WebClient webClient;
 
     @Autowired
     public VictoriaLogsQueryClient(RestTemplateBuilder restTemplateBuilder,
                                    VictoriaLogsProperties properties,
-                                   ObjectMapper objectMapper) {
+                                   ObjectMapper objectMapper,
+                                   WebClient webClient) {
         this.properties = properties;
         this.objectMapper = objectMapper;
         this.restTemplate = restTemplateBuilder
                 .setConnectTimeout(Duration.ofSeconds(5))
                 .setReadTimeout(Duration.ZERO)
                 .build();
+        this.webClient = webClient;
     }
 
     /**
@@ -79,11 +95,26 @@ public class VictoriaLogsQueryClient {
      * @return List of log entries matching the query
      */
     public List<LogQueryResponse> query(LogQueryRequest request) {
-        String url = buildQueryUrl(request);
+        String url = properties.url() + QUERY;
         log.info("Executing query: {}", url);
 
         try {
-            String response = restTemplate.getForObject(url, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("query", request.getQuery());
+            if (StringUtils.hasText(request.getStart())) {
+                params.add("start", request.getStart());
+            }
+            if (StringUtils.hasText(request.getEnd())) {
+                params.add("end", request.getEnd());
+            }
+            params.add("limit", String.valueOf(request.getLimit() != null ? request.getLimit() : 500));
+
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+            String response = restTemplate.postForObject(url, requestEntity, String.class);
+
             List<LogQueryResponse> entries = new ArrayList<>();
             if (response != null) {
                 String[] lines = response.split("\n");
@@ -107,11 +138,25 @@ public class VictoriaLogsQueryClient {
      * @return Number of matching log entries
      */
     public long count(LogQueryRequest request) {
-        String url = buildCountUrl(request);
+        String url = properties.url() + "/api/v1/query/count";
         log.debug("Executing count query: {}", url);
 
         try {
-            String response = restTemplate.getForObject(url, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("query", request.getQuery());
+            if (StringUtils.hasText(request.getStart())) {
+                params.add("start", request.getStart());
+            }
+            if (StringUtils.hasText(request.getEnd())) {
+                params.add("end", request.getEnd());
+            }
+
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+            String response = restTemplate.postForObject(url, requestEntity, String.class);
+
             if (StringUtils.hasText(response)) {
                 return Long.parseLong(response.trim());
             }
@@ -125,91 +170,62 @@ public class VictoriaLogsQueryClient {
     /**
      * Execute a streaming query for real-time log tailing
      * @param query Query expression
-     * @param handler Callback function to handle each log entry
      */
-    public void tail(String query, Consumer<LogQueryResponse> handler) {
-        String url = buildTailUrl(query);
-        log.debug("Starting log tail stream: {}", url);
+    public Flux<LogQueryResponse> tail(String query) {
+        String url = properties.url() + TAIL;
 
-        try {
-            restTemplate.execute(url, HttpMethod.GET, null, response -> {
-                try (BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(response.getBody()))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        if (!StringUtils.hasText(line)) {
-                            continue;
-                        }
-                        LogQueryResponse entry = objectMapper.readValue(line, LogQueryResponse.class);
-                        handler.accept(entry);
+        return webClient
+                .post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("query", query))
+                .retrieve()
+                .bodyToFlux(String.class)
+                .doOnNext(response -> log.debug("Received response: {}", response))
+                .filter(StringUtils::hasText)
+                .<LogQueryResponse>handle((line, sink) -> {
+                    try {
+                        sink.next(objectMapper.readValue(line, LogQueryResponse.class));
+                    } catch (JsonProcessingException e) {
+                        log.error("Failed to parse log entry: {}", line, e);
+                        sink.error(new VictoriaLogsQueryException("Failed to parse log entry", e));
                     }
-                }
-                return null;
-            });
-        } catch (Exception e) {
-            log.error("Error in log tail stream: {}", query, e);
-            throw new VictoriaLogsQueryException("Failed to tail logs", e);
-        }
+                })
+                .doOnSubscribe(subscription -> log.debug("Starting subscription to log stream"))
+                .doOnError(error -> log.error("Error in log tail stream: {}", error.getMessage(), error))
+                .doOnComplete(() -> log.debug("Log stream completed"))
+                .onErrorMap(e -> new VictoriaLogsQueryException("Failed to tail logs", e));
     }
 
     /**
-     * Build URL for regular queries
+     * Execute a streaming query for real-time log tailing with heartbeat mechanism
+     * @param query Query expression
      */
-    private String buildQueryUrl(LogQueryRequest request) {
-        // 不使用 UriComponentsBuilder，因为它可能会导致多次编码
-        StringBuilder urlBuilder = new StringBuilder(properties.url())
-                .append("/select/logsql/query?query=");
+    public Flux<ServerSentEvent<LogQueryResponse>> tailAsSSE(String query) {
+        // Create a heartbeat event flux that emits every 15 seconds
+        Flux<ServerSentEvent<LogQueryResponse>> heartbeat = Flux.interval(Duration.ZERO, Duration.ofSeconds(15))
+                .map(i -> ServerSentEvent.<LogQueryResponse>builder()
+                        .event("heartbeat")
+                        .data(null)
+                        .build());
 
-        // 只编码一次查询参数
-        urlBuilder.append(URLEncoder.encode(request.getQuery(), StandardCharsets.UTF_8));
+        // Create the initial connection event
+        Flux<ServerSentEvent<LogQueryResponse>> connectionEvent = Flux.just(
+                ServerSentEvent.<LogQueryResponse>builder()
+                        .event("connected")
+                        .data(null)
+                        .build()
+        );
 
-        // 添加其他参数
-        if (StringUtils.hasText(request.getStart())) {
-            urlBuilder.append("&start=").append(URLEncoder.encode(request.getStart(), StandardCharsets.UTF_8));
-        }
-        if (StringUtils.hasText(request.getEnd())) {
-            urlBuilder.append("&end=").append(URLEncoder.encode(request.getEnd(), StandardCharsets.UTF_8));
-        }
-        if (request.getLimit() != null) {
-            urlBuilder.append("&limit=").append(request.getLimit());
-        } else {
-            urlBuilder.append("&limit=500");
-        }
-
-        return urlBuilder.toString();
+        // Combine the data stream with heartbeat events
+        return Flux.merge(
+                connectionEvent,
+                heartbeat,
+                tail(query).map(logResponse -> ServerSentEvent.<LogQueryResponse>builder()
+                        .event("log")
+                        .data(logResponse)
+                        .build())
+        );
     }
 
-
-
-    /**
-     * Build URL for count queries
-     */
-    private String buildCountUrl(LogQueryRequest request) {
-        UriComponentsBuilder builder = UriComponentsBuilder
-                .fromHttpUrl(properties.url())
-                .path("/api/v1/query/count")
-                .queryParam("query", request.getQuery());
-
-        if (StringUtils.hasText(request.getStart())) {
-            builder.queryParam("start", request.getStart());
-        }
-        if (StringUtils.hasText(request.getEnd())) {
-            builder.queryParam("end", request.getEnd());
-        }
-
-        return builder.build().encode().toUriString();
-    }
-
-    /**
-     * Build URL for streaming queries
-     */
-    private String buildTailUrl(String query) {
-        return UriComponentsBuilder
-                .fromHttpUrl(properties.url())
-                .path(TAIL)
-                .queryParam("query", query)
-                .build()
-                .encode()
-                .toUriString();
-    }
 }

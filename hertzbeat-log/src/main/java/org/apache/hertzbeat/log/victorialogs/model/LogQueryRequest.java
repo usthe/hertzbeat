@@ -21,10 +21,10 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.util.Set;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Value;
-import org.springframework.boot.context.properties.bind.DefaultValue;
+import lombok.NoArgsConstructor;
 
 
 /**
@@ -32,6 +32,8 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LogQueryRequest {
     /**
      * Query string for log search

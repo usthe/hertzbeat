@@ -33,14 +33,14 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
         + SignConstants.DOT
         + LogConstants.VICTORIA_LOGS)
 public record VictoriaLogsProperties(
-        /**
-         * Whether to enable VictoriaLogs integration
+        /*
+          Whether to enable VictoriaLogs integration
          */
         @DefaultValue("false")
         boolean enabled,
 
-        /**
-         * VictoriaLogs server URL
+        /*
+          VictoriaLogs server URL
          */
         @DefaultValue("http://localhost:9428")
         @NotNull
