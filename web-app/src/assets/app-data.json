@@ -205,14 +205,14 @@
           "link": "/plugin/custom-plugin",
           "children": [
             {
-            "text": "plugin",
-            "i18n": "menu.advanced.plugin",
+            "text": "custom-plugin",
+            "i18n": "plugin.type.custom",
             "icon": "anticon-usb",
-            "link": "/plugin/official-plugin"
+            "link": "/plugin/custom-plugin"
             },
             {
-              "text": "plugin",
-              "i18n": "menu.advanced.plugin",
+              "text": "official-plugin",
+              "i18n": "plugin.type.official",
               "icon": "anticon-usb",
               "link": "/plugin/official-plugin"
             }

@@ -12,7 +12,6 @@ import { UserLockComponent } from './passport/lock/lock.component';
 import { UserLoginComponent } from './passport/login/login.component';
 import { CustomPluginComponent } from './plugin/custom-plugin/custom-plugin.component';
 import { OfficialPluginComponent } from './plugin/offical-plugin/official-plugin.component';
-import { PluginComponent } from './plugin/plugin.component';
 import { StatusPublicComponent } from './status-public/status-public.component';
 
 const routes: Routes = [
@@ -29,19 +28,18 @@ const routes: Routes = [
       { path: 'alert', loadChildren: () => import('./alert/alert.module').then(m => m.AlertModule) },
       {
         path: 'plugin',
-        component: PluginComponent,
         data: { titleI18n: 'menu.advanced.plugin' },
         children: [
           { path: '', redirectTo: 'official-plugin', pathMatch: 'full' },
           {
             path: 'official-plugin',
             component: OfficialPluginComponent,
-            data: { titleI18n: 'plugin.official' }
+            data: { titleI18n: 'plugin.type.official' }
           },
           {
             path: 'custom-plugin',
             component: CustomPluginComponent,
-            data: { titleI18n: 'plugin.custom' }
+            data: { titleI18n: 'plugin.type.custom' }
           }
         ]
       },
