@@ -1,4 +1,4 @@
-package org.apache.hertzbeat.common.entity.plugin;
+package org.apache.hertzbeat.common.script;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

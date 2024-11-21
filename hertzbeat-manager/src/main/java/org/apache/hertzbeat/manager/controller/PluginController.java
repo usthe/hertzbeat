@@ -26,7 +26,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.hertzbeat.common.entity.dto.Message;
 import org.apache.hertzbeat.common.entity.dto.PluginUpload;
-import org.apache.hertzbeat.common.entity.manager.PluginMetadata;
+import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParam;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParametersVO;
 import org.apache.hertzbeat.manager.service.PluginService;

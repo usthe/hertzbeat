@@ -20,7 +20,7 @@ package org.apache.hertzbeat.manager.scheduler;
 import java.util.List;
 import org.apache.hertzbeat.common.entity.job.Job;
 import org.apache.hertzbeat.common.entity.message.CollectRep;
-import org.apache.hertzbeat.common.entity.plugin.Script;
+import org.apache.hertzbeat.common.script.Script;
 
 /**
  * Collection job management provides api interface

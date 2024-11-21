@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.common.entity.alerter.Alert;
 import org.apache.hertzbeat.common.entity.plugin.PluginContext;
-import org.apache.hertzbeat.common.entity.plugin.Script;
+import org.apache.hertzbeat.common.script.Script;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.apache.hertzbeat.common.support.SpringContextHolder;
 import org.apache.hertzbeat.common.util.ScriptUtil;
