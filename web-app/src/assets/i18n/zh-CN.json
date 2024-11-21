@@ -749,6 +749,7 @@
       "link": "https://hertzbeat.apache.org/zh-cn/docs/help/plugin"
     },
     "upload": "上传插件",
+    "add": "新增插件",
     "name": "插件名称",
     "status": "启用状态",
     "jar": {

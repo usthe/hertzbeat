@@ -85,4 +85,8 @@ export class PluginService {
   public savePluginParamDefine(body: any): Observable<Message<any>> {
     return this.http.post<Message<any>>(`${plugin_uri}/params`, body);
   }
+
+  public getOfficialPlugins(): Observable<Message<Plugin[]>> {
+    return this.http.get<Message<Plugin[]>>(`${plugin_uri}/official`);
+  }
 }

@@ -792,6 +792,7 @@
       "link": "https://hertzbeat.apache.org/docs/help/plugin"
     },
     "upload": "Upload Plugin",
+    "add": "Add Plugin",
     "name": "Plugin Name",
     "type": {
       "": "Plugin Type",

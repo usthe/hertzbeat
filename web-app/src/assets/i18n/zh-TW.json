@@ -760,6 +760,7 @@
       "link": "https://hertzbeat.apache.org/zh-cn/docs/help/plugin"
     },
     "upload": "上傳插件",
+    "add": "新增插件",
     "name": "插件名稱",
     "type": {
       "": "插件類型",
