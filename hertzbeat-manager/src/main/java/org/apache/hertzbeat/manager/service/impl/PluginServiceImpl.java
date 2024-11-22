@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +60,7 @@ import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
 import org.apache.hertzbeat.common.entity.plugin.PluginConfig;
 import org.apache.hertzbeat.common.entity.plugin.PluginContext;
 import org.apache.hertzbeat.common.support.exception.CommonException;
+import org.apache.hertzbeat.common.util.JsonUtil;
 import org.apache.hertzbeat.common.util.SnowFlakeIdGenerator;
 import org.apache.hertzbeat.manager.dao.PluginItemDao;
 import org.apache.hertzbeat.manager.dao.PluginMetadataDao;
@@ -197,6 +199,19 @@ public class PluginServiceImpl implements PluginService {
         pluginParamDao.deletePluginParamsByPluginMetadataId(params.get(0).getPluginMetadataId());
         pluginParamDao.saveAll(params);
         syncPluginParamMap(params.get(0).getPluginMetadataId(), params, false);
+    }
+
+    /**
+     * get official plugin infos
+     */
+    @Override
+    public List<Map<String, String>> getOfficialPluginInfos() {
+        return Arrays.stream(OfficialPluginEnum.values())
+                .map(plugin -> Map.of(
+                        "pluginName", plugin.getPluginName(),
+                        "className", plugin.getClassName()))
+                .collect(Collectors.toList());
+
     }
 
     private void syncPluginParamMap(Long pluginMetadataId, List<PluginParam> params, boolean isDelete) {

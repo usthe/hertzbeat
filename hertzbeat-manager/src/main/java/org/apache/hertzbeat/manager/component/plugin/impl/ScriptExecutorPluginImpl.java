@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.hertzbeat.plugin.impl;
+package org.apache.hertzbeat.manager.component.plugin.impl;
 
 import java.util.Map;
 import java.util.function.Function;

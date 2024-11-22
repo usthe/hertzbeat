@@ -28,13 +28,13 @@ public enum OfficialPluginEnum {
     /*
       Official script plugin
      */
-    OFFICIAL_SCRIPT("define-official-script.yml", "org.apache.hertzbeat.plugin.impl.ScriptExecutorPluginImpl");
+    OFFICIAL_SCRIPT("define-official-script", "org.apache.hertzbeat.plugin.impl.ScriptExecutorPluginImpl");
 
-    private final String defineFileName;
+    private final String pluginName;
     private final String className;
 
-    OfficialPluginEnum(String defineFileName, String className) {
-        this.defineFileName = defineFileName;
+    OfficialPluginEnum(String pluginName, String className) {
+        this.pluginName = pluginName;
         this.className = className;
     }
 

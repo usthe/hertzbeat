@@ -18,6 +18,7 @@
 package org.apache.hertzbeat.manager.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -96,5 +97,10 @@ public interface PluginService {
      * @param params params
      */
     void savePluginParam(List<PluginParam> params);
+
+    /**
+     * get official plugin infos
+     */
+    List<Map<String, String>> getOfficialPluginInfos();
 
 }

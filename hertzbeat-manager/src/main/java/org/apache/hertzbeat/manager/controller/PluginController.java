@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.hertzbeat.common.entity.dto.Message;
 import org.apache.hertzbeat.common.entity.dto.PluginUpload;
@@ -69,6 +70,12 @@ public class PluginController {
         Page<PluginMetadata> alertPage = pluginService.getPlugins(search, pageIndex, pageSize);
         return ResponseEntity.ok(Message.success(alertPage));
     }
+
+    @GetMapping("/official/infos")
+    public ResponseEntity<Message<List<Map<String, String>>>> getOfficialPluginInfos() {
+        return ResponseEntity.ok(Message.success(pluginService.getOfficialPluginInfos()));
+    }
+
 
     @DeleteMapping
     @Operation(summary = "Delete plugins based on ID", description = "Delete plugins based on ID")
