@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.hertzbeat.manager.component.plugin;
+package org.apache.hertzbeat.plugin.impl;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -27,8 +27,8 @@ import org.apache.hertzbeat.common.entity.plugin.PluginContext;
 import org.apache.hertzbeat.common.script.Script;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.apache.hertzbeat.common.support.SpringContextHolder;
+import org.apache.hertzbeat.common.support.event.OfficialScriptPluginEvent;
 import org.apache.hertzbeat.common.util.ScriptUtil;
-import org.apache.hertzbeat.manager.scheduler.CollectorJobScheduler;
 import org.apache.hertzbeat.plugin.PostAlertPlugin;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -36,13 +36,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class ScriptExecutorPluginImpl implements PostAlertPlugin {
-
-    public ScriptExecutorPluginImpl(CollectorJobScheduler collectorJobScheduler) {
-        this.collectorJobScheduler = collectorJobScheduler;
-    }
-
-    private final CollectorJobScheduler collectorJobScheduler;
-
 
     @Override
     public void execute(Alert alert, PluginContext pluginContext) {
@@ -64,9 +57,9 @@ public class ScriptExecutorPluginImpl implements PostAlertPlugin {
             return;
         }
         Script script = Script.builder().type(type).content(scriptContent).id(ScriptUtil.generateScriptKey(scriptContent)).build();
-        String result = collectorJobScheduler.executeSyncScript(script, pluginContext.param().getString("collector", null));
+        ApplicationContext applicationContext = SpringContextHolder.getApplicationContext();
+        applicationContext.publishEvent(new OfficialScriptPluginEvent(applicationContext, script, pluginContext.param().getString("collector", null)));
         log.info("Script has been sent to collector: {}", pluginContext.param().getString("collector", null));
-        log.info("Script result: {}", result);
     }
 
     public ScriptExecutor getScriptExecutorByType(String type) {
