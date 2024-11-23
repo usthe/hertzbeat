@@ -103,4 +103,9 @@ public interface PluginService {
      */
     List<Map<String, String>> getOfficialPluginInfos();
 
+    /**
+     * get official plugin instances
+     */
+    List<Map<String, String>> getOfficialPluginInstances();
+
 }

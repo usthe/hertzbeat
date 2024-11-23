@@ -141,8 +141,6 @@ public class DispatcherAlarm implements InitializingBean {
                         alertStoreHandler.store(alert);
                         // Notice distribution
                         sendNotify(alert);
-                        // Execute the plugin if enable (Compatible with old version plugins, will be removed in later versions)
-                        pluginRunner.pluginExecute(Plugin.class, plugin -> plugin.alert(alert));
                         // Execute the plugin if enable with params
                         pluginRunner.pluginExecute(PostAlertPlugin.class, (afterAlertPlugin, pluginContext) -> afterAlertPlugin.execute(alert, pluginContext));
                     }

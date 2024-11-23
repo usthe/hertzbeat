@@ -214,6 +214,14 @@ public class PluginServiceImpl implements PluginService {
 
     }
 
+    /**
+     * get official plugin instances
+     */
+    @Override
+    public List<Map<String, String>> getOfficialPluginInstances() {
+        return List.of();
+    }
+
     private void syncPluginParamMap(Long pluginMetadataId, List<PluginParam> params, boolean isDelete) {
         if (isDelete) {
             PARAMS_MAP.remove(pluginMetadataId);

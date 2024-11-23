@@ -76,6 +76,11 @@ public class PluginController {
         return ResponseEntity.ok(Message.success(pluginService.getOfficialPluginInfos()));
     }
 
+    @GetMapping("/official/instances")
+    public ResponseEntity<Message<List<Map<String, String>>>> getOfficialPluginInstances() {
+        return ResponseEntity.ok(Message.success(pluginService.getOfficialPluginInfos()));
+    }
+
 
     @DeleteMapping
     @Operation(summary = "Delete plugins based on ID", description = "Delete plugins based on ID")

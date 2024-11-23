@@ -30,14 +30,13 @@ import org.springframework.stereotype.Component;
 public class OfficialPluginServiceFactory {
 
     @Autowired
-    private Map<String, Plugin> officailPluginsMap;
+    private Map<String, Plugin<?>> officialPluginsMap;
 
-    public List<Plugin> getPlugins(List<String> pluginNames) {
-    return pluginNames.stream()
-        .map(name -> officailPluginsMap.get(name))
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+    public List<Plugin<?>> getPlugins(List<String> pluginNames) {
+        return pluginNames.stream()
+            .map(name -> officialPluginsMap.get(name))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
-
 
 }

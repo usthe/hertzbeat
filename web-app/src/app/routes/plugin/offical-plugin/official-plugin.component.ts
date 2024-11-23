@@ -67,8 +67,19 @@ export class OfficialPluginComponent implements OnInit {
   pluginForm: FormGroup;
   value!: string;
   collectors!: Collector[];
+  officialPluginInfos: any[] = [];
+  officialPluginNames: string[] = [];
 
   ngOnInit(): void {
+    this.pluginService.getOfficialPluginInfos().subscribe((message: any) => {
+      if (message.code === 0) {
+        this.officialPluginInfos = message.data;
+        this.officialPluginNames = this.officialPluginInfos.map((i: any) => i.pluginName);
+        console.log(this.officialPluginNames);
+      } else {
+        console.warn(message.msg);
+      }
+    });
     this.loadPluginsTable();
     this.collectorSvc.getCollectors().subscribe(message => {
       if (message.code === 0) {
@@ -82,21 +93,6 @@ export class OfficialPluginComponent implements OnInit {
   sync() {
     this.loadPluginsTable();
   }
-
-  beforeUpload = (file: NzUploadFile): boolean => {
-    this.fileList = [file];
-    this.pluginForm.patchValue({
-      jarFile: file
-    });
-    return false;
-  };
-
-  fileRemove = (): boolean => {
-    this.pluginForm.patchValue({
-      jarFile: null
-    });
-    return true;
-  };
 
   loadPluginsTable() {
     this.tableLoading = true;
@@ -252,7 +248,6 @@ export class OfficialPluginComponent implements OnInit {
     if (this.pluginForm.valid) {
       const formData = new FormData();
       formData.append('name', this.pluginForm.get('name')?.value);
-      formData.append('jarFile', this.fileList[0] as any);
       formData.append('enableStatus', this.pluginForm.get('enableStatus')?.value);
       const uploadPlugin$ = this.pluginService
         .uploadPlugin(formData)
@@ -268,6 +263,7 @@ export class OfficialPluginComponent implements OnInit {
             this.resetForm();
             this.notifySvc.success(this.i18nSvc.fanyi('common.notify.new-success'), '');
             this.loadPluginsTable();
+            this.showEditParamGuideModal(); // Show guide modal
           } else {
             this.notifySvc.error(this.i18nSvc.fanyi('common.notify.new-fail'), message.msg);
           }
@@ -281,6 +277,14 @@ export class OfficialPluginComponent implements OnInit {
       });
       this.isManageModalOkLoading = false;
     }
+  }
+
+  showEditParamGuideModal(): void {
+    this.modal.info({
+      nzTitle: this.i18nSvc.fanyi('plugin.guide.title'),
+      nzContent: this.i18nSvc.fanyi('plugin.guide.content'),
+      nzOkText: this.i18nSvc.fanyi('common.button.ok')
+    });
   }
 
   resetForm(): void {
@@ -328,7 +332,6 @@ export class OfficialPluginComponent implements OnInit {
   }
 
   onEditPluginParamDefineModalOk() {
-    console.log(this.value);
     const savePluginParamDefine$ = this.pluginService
       .savePluginParamDefine(Object.values(this.params))
       .pipe(

@@ -86,7 +86,7 @@ export class PluginService {
     return this.http.post<Message<any>>(`${plugin_uri}/params`, body);
   }
 
-  public getOfficialPlugins(): Observable<Message<Plugin[]>> {
-    return this.http.get<Message<Plugin[]>>(`${plugin_uri}/official`);
+  public getOfficialPluginInfos(): Observable<Message<Plugin[]>> {
+    return this.http.get<Message<Plugin[]>>(`${plugin_uri}/official/infos`);
   }
 }
