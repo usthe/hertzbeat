@@ -272,7 +272,7 @@ public class PluginServiceImpl implements PluginService {
                     }
                 }
                 if (pluginItems.isEmpty()) {
-                    throw new CommonException("Illegal plug-ins, please refer to https://hertzbeat.apache.org/docs/help/plugin/");
+                    throw new CommonException("Illegal plugins, please refer to https://hertzbeat.apache.org/docs/help/plugin/");
                 }
             } catch (IOException e) {
                 log.error("Error reading JAR file:{}", jarFile.getAbsoluteFile(), e);

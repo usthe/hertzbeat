@@ -16,30 +16,28 @@
  *
  */
 
-package org.apache.hertzbeat.manager.component.plugin;
+package org.apache.hertzbeat.manager.component.plugin.factory;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.hertzbeat.common.support.event.OfficialScriptPluginEvent;
-import org.apache.hertzbeat.manager.scheduler.CollectorJobScheduler;
-import org.springframework.context.event.EventListener;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import org.apache.hertzbeat.plugin.Plugin;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/**
- * Send Server Message to collector by collector name
- */
 @Component
-@Slf4j
-public class ServerMessageSender {
+public class OfficialPluginServiceFactory {
 
-    private final CollectorJobScheduler collectorJobScheduler;
+    @Autowired
+    private Map<String, Plugin> officailPluginsMap;
 
-    public ServerMessageSender(CollectorJobScheduler collectorJobScheduler) {
-        this.collectorJobScheduler = collectorJobScheduler;
+    public List<Plugin> getPlugins(List<String> pluginNames) {
+    return pluginNames.stream()
+        .map(name -> officailPluginsMap.get(name))
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
     }
 
-    @EventListener(OfficialScriptPluginEvent.class)
-    public void onOfficialScriptPluginEvent(OfficialScriptPluginEvent event) {
-        log.info("Received plugin event: {}", event);
-        collectorJobScheduler.executeSyncScript(event.getScript(), event.getCollector());
-    }
+
 }

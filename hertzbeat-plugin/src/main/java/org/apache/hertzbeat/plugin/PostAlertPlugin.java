@@ -19,15 +19,17 @@ package org.apache.hertzbeat.plugin;
 
 import org.apache.hertzbeat.common.entity.alerter.Alert;
 import org.apache.hertzbeat.common.entity.plugin.PluginContext;
+import org.checkerframework.checker.units.qual.A;
 
 /**
  * Post-alarm plug-in
  */
-public interface PostAlertPlugin {
+public interface PostAlertPlugin extends Plugin<Alert> {
 
     /**
      * Supports user-defined parameters
      */
+    @Override
     void execute(Alert alert, PluginContext pluginContext);
 
 }
