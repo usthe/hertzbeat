@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.hertzbeat.plugin;
+package org.apache.hertzbeat.common.entity.dto;
 
-import org.apache.hertzbeat.common.entity.alerter.Alert;
-import org.apache.hertzbeat.common.entity.plugin.PluginContext;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * Post-alarm plug-in
- */
-public interface PostAlertPlugin extends Plugin<Alert> {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Plugin {
 
-    /**
-     * Supports user-defined parameters
-     */
-    @Override
-    void execute(Alert alert, PluginContext pluginContext);
+    @NotNull(message = "Plugin name is required")
+    private String name;
 
+    @NotNull(message = "Enable status is required")
+    private Boolean enableStatus;
 }

@@ -48,7 +48,7 @@ export class OfficialPluginComponent implements OnInit {
   ) {
     this.pluginForm = this.fb.group({
       name: [null, [Validators.required]],
-      jarFile: [null, [Validators.required]],
+      type: [null, [Validators.required]],
       enableStatus: [true, [Validators.required]]
     });
     this.lang = this.i18nSvc.defaultLang;
@@ -75,7 +75,6 @@ export class OfficialPluginComponent implements OnInit {
       if (message.code === 0) {
         this.officialPluginInfos = message.data;
         this.officialPluginNames = this.officialPluginInfos.map((i: any) => i.pluginName);
-        console.log(this.officialPluginNames);
       } else {
         console.warn(message.msg);
       }
@@ -248,9 +247,10 @@ export class OfficialPluginComponent implements OnInit {
     if (this.pluginForm.valid) {
       const formData = new FormData();
       formData.append('name', this.pluginForm.get('name')?.value);
+      formData.append('type', this.pluginForm.get('type')?.value);
       formData.append('enableStatus', this.pluginForm.get('enableStatus')?.value);
       const uploadPlugin$ = this.pluginService
-        .uploadPlugin(formData)
+        .saveOfficialPlugin(formData)
         .pipe(
           finalize(() => {
             uploadPlugin$.unsubscribe();
@@ -263,7 +263,7 @@ export class OfficialPluginComponent implements OnInit {
             this.resetForm();
             this.notifySvc.success(this.i18nSvc.fanyi('common.notify.new-success'), '');
             this.loadPluginsTable();
-            this.showEditParamGuideModal(); // Show guide modal
+            // this.showEditParamGuideModal(); // Show guide modal
           } else {
             this.notifySvc.error(this.i18nSvc.fanyi('common.notify.new-fail'), message.msg);
           }

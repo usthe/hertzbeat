@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.hertzbeat.plugin;
+package org.apache.hertzbeat.common.entity.dto;
 
-import org.apache.hertzbeat.common.entity.alerter.Alert;
-import org.apache.hertzbeat.common.entity.plugin.PluginContext;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
- * Post-alarm plug-in
+ * data transfer class for uploading plugins
  */
-public interface PostAlertPlugin extends Plugin<Alert> {
+@EqualsAndHashCode(callSuper = true)
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class CustomPlugin extends Plugin {
 
-    /**
-     * Supports user-defined parameters
-     */
-    @Override
-    void execute(Alert alert, PluginContext pluginContext);
+    @NotNull
+    private MultipartFile jarFile;
 
 }

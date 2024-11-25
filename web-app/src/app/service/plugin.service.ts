@@ -55,8 +55,12 @@ export class PluginService {
     return this.http.get<Message<Page<Plugin>>>(plugin_uri, options);
   }
 
-  public uploadPlugin(body: FormData): Observable<Message<any>> {
-    return this.http.post<Message<any>>(plugin_uri, body);
+  public saveCustomPlugin(body: FormData): Observable<Message<any>> {
+    return this.http.post<Message<any>>(`${plugin_uri}/custom`, body);
+  }
+
+  public saveOfficialPlugin(body: FormData): Observable<Message<any>> {
+    return this.http.post<Message<any>>(`${plugin_uri}/official`, body);
   }
 
   public updatePluginStatus(body: Plugin): Observable<Message<any>> {

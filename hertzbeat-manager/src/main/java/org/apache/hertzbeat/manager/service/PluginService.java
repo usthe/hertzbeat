@@ -22,7 +22,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import org.apache.hertzbeat.common.entity.dto.PluginUpload;
+import lombok.SneakyThrows;
+import org.apache.hertzbeat.common.entity.dto.CustomPlugin;
+import org.apache.hertzbeat.common.entity.dto.OfficialPlugin;
 import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
 import org.apache.hertzbeat.common.entity.plugin.PluginContext;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParam;
@@ -35,9 +37,16 @@ import org.springframework.data.domain.Page;
 public interface PluginService {
 
     /**
-     * save plugin
+     * save custom plugin
      */
-    void savePlugin(PluginUpload pluginUpload);
+    void saveCustomPlugin(CustomPlugin customPlugin);
+
+    /**
+     * save official plugin
+     * @param officialPlugin official plugin
+     */
+    @SneakyThrows
+    void saveOfficialPlugin(OfficialPlugin officialPlugin);
 
     /**
      * Determine whether the plugin is enabled

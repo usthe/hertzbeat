@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.apache.hertzbeat.common.constants.PluginType;
-import org.apache.hertzbeat.common.entity.dto.PluginUpload;
+import org.apache.hertzbeat.common.entity.dto.CustomPlugin;
 import org.apache.hertzbeat.common.entity.plugin.PluginItem;
 import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
 import org.apache.hertzbeat.manager.dao.PluginItemDao;
@@ -78,7 +78,7 @@ class PluginServiceTest {
     }
 
     @Test
-    void testSavePlugin() {
+    void testSaveCustomPlugin() {
 
         List<PluginItem> pluginItems = Collections.singletonList(new PluginItem("org.apache.hertzbeat.PluginTest", PluginType.POST_ALERT));
         PluginMetadata metadata = new PluginMetadata();
@@ -88,12 +88,12 @@ class PluginServiceTest {
         doReturn(metadata).when(service).validateJarFile(any());
 
         MockMultipartFile mockFile = new MockMultipartFile("file", "test-plugin.jar", "application/java-archive", "plugin-content".getBytes());
-        PluginUpload pluginUpload = new PluginUpload(mockFile, "Test Plugin", true);
+        CustomPlugin customPlugin = new CustomPlugin(mockFile, "Test Plugin", true);
 
         when(metadataDao.save(any(PluginMetadata.class))).thenReturn(new PluginMetadata());
         when(itemDao.saveAll(anyList())).thenReturn(Collections.emptyList());
 
-        service.savePlugin(pluginUpload);
+        service.saveCustomPlugin(customPlugin);
         verify(metadataDao, times(1)).save(any(PluginMetadata.class));
         verify(itemDao, times(1)).saveAll(anyList());
 

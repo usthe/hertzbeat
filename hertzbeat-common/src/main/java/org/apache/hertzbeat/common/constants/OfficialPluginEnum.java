@@ -38,4 +38,12 @@ public enum OfficialPluginEnum {
         this.className = className;
     }
 
+    public static String getClassNameByPluginName(String pluginName) {
+        for (OfficialPluginEnum officialPluginEnum : OfficialPluginEnum.values()) {
+            if (officialPluginEnum.getPluginName().equals(pluginName)) {
+                return officialPluginEnum.getClassName();
+            }
+        }
+        return null;
+    }
 }

@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.hertzbeat.common.entity.dto.Message;
-import org.apache.hertzbeat.common.entity.dto.PluginUpload;
+import org.apache.hertzbeat.common.entity.dto.CustomPlugin;
+import org.apache.hertzbeat.common.entity.dto.OfficialPlugin;
 import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParam;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParametersVO;
@@ -53,12 +54,20 @@ public class PluginController {
 
     private final PluginService pluginService;
 
-    @PostMapping
-    @Operation(summary = "upload plugin", description = "upload plugin")
-    public ResponseEntity<Message<Void>> uploadNewPlugin(@Valid PluginUpload pluginUpload) {
-        pluginService.savePlugin(pluginUpload);
+    @PostMapping("/custom")
+    @Operation(summary = "upload custom plugin", description = "upload custom plugin")
+    public ResponseEntity<Message<Void>> uploadCustomPlugin(@Valid CustomPlugin customPlugin) {
+        pluginService.saveCustomPlugin(customPlugin);
         return ResponseEntity.ok(Message.success("Add success"));
     }
+
+    @PostMapping("/official")
+    @Operation(summary = "upload official plugin", description = "upload official plugin")
+    public ResponseEntity<Message<Void>> addOfficialPlugin(@Valid OfficialPlugin officialPlugin) {
+        pluginService.saveOfficialPlugin(officialPlugin);
+        return ResponseEntity.ok(Message.success("Add success"));
+    }
+
 
 
     @GetMapping

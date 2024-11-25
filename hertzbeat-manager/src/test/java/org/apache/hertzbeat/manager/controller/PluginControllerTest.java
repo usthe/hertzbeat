@@ -57,7 +57,7 @@ class PluginControllerTest {
     }
 
     @Test
-    void uploadNewPlugin() throws Exception {
+    void uploadCustomPlugin() throws Exception {
         MockMultipartFile jarFile = new MockMultipartFile(
                 "jarFile",
                 "plugin-test.jar",

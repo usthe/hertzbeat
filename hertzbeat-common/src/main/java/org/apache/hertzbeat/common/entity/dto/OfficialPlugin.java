@@ -17,31 +17,19 @@
 
 package org.apache.hertzbeat.common.entity.dto;
 
-
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
- * data transfer class for uploading plugins
+ * Official plugin DTO
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PluginUpload {
+public class OfficialPlugin extends Plugin{
 
-    @NotNull
-    private MultipartFile jarFile;
-
-    @NotNull(message = "Plugin name is required")
-    private String name;
-
-    @NotNull(message = "Enable status is required")
-    private Boolean enableStatus;
-
-    //    @NotNull(message = "Collector is required")
-    //    private Collector collector;
-
+    private String type;
 }

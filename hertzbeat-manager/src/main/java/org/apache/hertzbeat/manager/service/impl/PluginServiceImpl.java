@@ -53,14 +53,14 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.hertzbeat.common.constants.OfficialPluginEnum;
 import org.apache.hertzbeat.common.constants.PluginType;
-import org.apache.hertzbeat.common.entity.dto.PluginUpload;
+import org.apache.hertzbeat.common.entity.dto.CustomPlugin;
+import org.apache.hertzbeat.common.entity.dto.OfficialPlugin;
 import org.apache.hertzbeat.common.entity.job.Configmap;
 import org.apache.hertzbeat.common.entity.plugin.PluginItem;
 import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
 import org.apache.hertzbeat.common.entity.plugin.PluginConfig;
 import org.apache.hertzbeat.common.entity.plugin.PluginContext;
 import org.apache.hertzbeat.common.support.exception.CommonException;
-import org.apache.hertzbeat.common.util.JsonUtil;
 import org.apache.hertzbeat.common.util.SnowFlakeIdGenerator;
 import org.apache.hertzbeat.manager.dao.PluginItemDao;
 import org.apache.hertzbeat.manager.dao.PluginMetadataDao;
@@ -71,6 +71,8 @@ import org.apache.hertzbeat.manager.service.PluginService;
 import org.apache.hertzbeat.plugin.PostAlertPlugin;
 import org.apache.hertzbeat.plugin.Plugin;
 import org.apache.hertzbeat.plugin.PostCollectPlugin;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -305,26 +307,26 @@ public class PluginServiceImpl implements PluginService {
     @Override
     @SneakyThrows
     @Transactional
-    public void savePlugin(PluginUpload pluginUpload) {
+    public void saveCustomPlugin(CustomPlugin customPlugin) {
         String jarPath = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).getAbsolutePath();
         Path extLibPath = Paths.get(new File(jarPath).getParent(), "plugin-lib");
         File extLibDir = extLibPath.toFile();
 
-        String fileName = pluginUpload.getJarFile().getOriginalFilename();
+        String fileName = customPlugin.getJarFile().getOriginalFilename();
         if (fileName == null) {
             throw new CommonException("Failed to upload plugin");
         }
         fileName = SnowFlakeIdGenerator.generateId() + "_" + fileName;
         File destFile = new File(extLibDir, fileName);
         FileUtils.createParentDirectories(destFile);
-        pluginUpload.getJarFile().transferTo(destFile);
+        customPlugin.getJarFile().transferTo(destFile);
         List<PluginItem> pluginItems;
         PluginMetadata pluginMetadata;
         try {
             PluginMetadata parsed = validateJarFile(destFile);
             pluginItems = parsed.getItems();
             pluginMetadata = PluginMetadata.builder()
-                .name(pluginUpload.getName())
+                .name(customPlugin.getName())
                 .enableStatus(true)
                 .paramCount(parsed.getParamCount())
                 .items(pluginItems).jarFilePath(destFile.getAbsolutePath())
@@ -344,6 +346,24 @@ public class PluginServiceImpl implements PluginService {
         // sync enabled status
         syncPluginStatus();
     }
+
+    @SneakyThrows
+    @Override
+    public void saveOfficialPlugin(OfficialPlugin officialPlugin) {
+        PluginMetadata metadata = new PluginMetadata();
+        metadata.setName(officialPlugin.getName());
+        metadata.setEnableStatus(true);
+        Yaml yaml = new Yaml();
+        Resource resource = new ClassPathResource(String.format("src/main/java/org/apache/hertzbeat/manager/component/plugin/define/%s.yml", officialPlugin.getType()));
+        PluginConfig pluginConfig = yaml.loadAs(resource.getInputStream(), PluginConfig.class);
+        metadata.setParamCount(CollectionUtils.size(pluginConfig.getParams()));
+        metadataDao.save(metadata);
+        List<PluginItem> pluginItems = new ArrayList<>();
+        pluginItems.add(new PluginItem(OfficialPluginEnum.getClassNameByPluginName(officialPlugin.getName()), PluginType.POST_ALERT));
+        itemDao.saveAll(pluginItems);
+        syncPluginStatus();
+    }
+
 
     @Override
     public boolean pluginIsEnable(Class<?> clazz) {

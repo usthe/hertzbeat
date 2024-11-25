@@ -255,7 +255,7 @@ export class CustomPluginComponent implements OnInit {
       formData.append('jarFile', this.fileList[0] as any);
       formData.append('enableStatus', this.pluginForm.get('enableStatus')?.value);
       const uploadPlugin$ = this.pluginService
-        .uploadPlugin(formData)
+        .saveCustomPlugin(formData)
         .pipe(
           finalize(() => {
             uploadPlugin$.unsubscribe();
