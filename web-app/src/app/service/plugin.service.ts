@@ -34,12 +34,7 @@ const plugin_uri = '/plugin';
 export class PluginService {
   constructor(private http: HttpClient) {}
 
-  public loadPlugins(
-    search: string | undefined,
-    type: number | undefined,
-    pageIndex: number,
-    pageSize: number
-  ): Observable<Message<Page<Plugin>>> {
+  public loadPlugins(search: string | undefined, type: string, pageIndex: number, pageSize: number): Observable<Message<Page<Plugin>>> {
     pageIndex = pageIndex ? pageIndex : 0;
     pageSize = pageSize ? pageSize : 8;
     // HttpParams is unmodifiable, so we need to save the return value of append/set
@@ -52,7 +47,7 @@ export class PluginService {
       httpParams = httpParams.append('search', search.trim());
     }
     const options = { params: httpParams };
-    return this.http.get<Message<Page<Plugin>>>(plugin_uri, options);
+    return this.http.get<Message<Page<Plugin>>>(`${plugin_uri}/${type}/instances`, options);
   }
 
   public saveCustomPlugin(body: FormData): Observable<Message<any>> {

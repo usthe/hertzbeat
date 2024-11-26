@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import lombok.SneakyThrows;
 import org.apache.hertzbeat.common.entity.dto.CustomPlugin;
 import org.apache.hertzbeat.common.entity.dto.OfficialPlugin;
-import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
+import org.apache.hertzbeat.common.entity.plugin.CustomPluginCMetadata;
 import org.apache.hertzbeat.common.entity.plugin.PluginContext;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParam;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParametersVO;
@@ -65,7 +65,7 @@ public interface PluginService {
      * @param pageSize      Number of list pagination
      * @return Plugins
      */
-    Page<PluginMetadata> getPlugins(String search, int pageIndex, int pageSize);
+    Page<CustomPluginCMetadata> getPlugins(String search, int pageIndex, int pageSize);
 
     /**
      * execute plugin
@@ -93,7 +93,7 @@ public interface PluginService {
      */
     void deletePlugins(Set<Long> ids);
 
-    void updateStatus(PluginMetadata plugin);
+    void updateStatus(CustomPluginCMetadata plugin);
 
     /**
      * get param define

@@ -46,14 +46,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * Plugin Entity
  */
 @Entity
-@Table(name = "hzb_plugin_metadata")
+@Table(name = "hzb_custom_plugin_metadata")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Plugin Entity")
 @EntityListeners(AuditingEntityListener.class)
-public class PluginMetadata {
+public class CustomPluginCMetadata {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,7 +78,7 @@ public class PluginMetadata {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        PluginMetadata that = (PluginMetadata) o;
+        CustomPluginCMetadata that = (CustomPluginCMetadata) o;
         return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(enableStatus, that.enableStatus) && Objects.equals(jarFilePath,
             that.jarFilePath) && Objects.equals(creator, that.creator) && Objects.equals(gmtCreate, that.gmtCreate);
     }

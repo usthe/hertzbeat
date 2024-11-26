@@ -35,8 +35,8 @@ import java.util.Optional;
 import java.util.Set;
 import org.apache.hertzbeat.common.constants.PluginType;
 import org.apache.hertzbeat.common.entity.dto.CustomPlugin;
+import org.apache.hertzbeat.common.entity.plugin.CustomPluginCMetadata;
 import org.apache.hertzbeat.common.entity.plugin.PluginItem;
-import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
 import org.apache.hertzbeat.manager.dao.PluginItemDao;
 import org.apache.hertzbeat.manager.dao.PluginMetadataDao;
 import org.apache.hertzbeat.manager.dao.PluginParamDao;
@@ -81,7 +81,7 @@ class PluginServiceTest {
     void testSaveCustomPlugin() {
 
         List<PluginItem> pluginItems = Collections.singletonList(new PluginItem("org.apache.hertzbeat.PluginTest", PluginType.POST_ALERT));
-        PluginMetadata metadata = new PluginMetadata();
+        CustomPluginCMetadata metadata = new CustomPluginCMetadata();
         metadata.setItems(pluginItems);
         metadata.setParamCount(0);
         PluginServiceImpl service = spy(pluginService);
@@ -90,30 +90,30 @@ class PluginServiceTest {
         MockMultipartFile mockFile = new MockMultipartFile("file", "test-plugin.jar", "application/java-archive", "plugin-content".getBytes());
         CustomPlugin customPlugin = new CustomPlugin(mockFile, "Test Plugin", true);
 
-        when(metadataDao.save(any(PluginMetadata.class))).thenReturn(new PluginMetadata());
+        when(metadataDao.save(any(CustomPluginCMetadata.class))).thenReturn(new CustomPluginCMetadata());
         when(itemDao.saveAll(anyList())).thenReturn(Collections.emptyList());
 
         service.saveCustomPlugin(customPlugin);
-        verify(metadataDao, times(1)).save(any(PluginMetadata.class));
+        verify(metadataDao, times(1)).save(any(CustomPluginCMetadata.class));
         verify(itemDao, times(1)).saveAll(anyList());
 
     }
 
     @Test
     void testUpdateStatus() {
-        PluginMetadata plugin = new PluginMetadata();
+        CustomPluginCMetadata plugin = new CustomPluginCMetadata();
         plugin.setId(1L);
         plugin.setEnableStatus(true);
         plugin.setName("test-plugin");
 
         when(metadataDao.findById(1L)).thenReturn(Optional.of(plugin));
-        when(metadataDao.save(any(PluginMetadata.class))).thenReturn(plugin);
+        when(metadataDao.save(any(CustomPluginCMetadata.class))).thenReturn(plugin);
         assertDoesNotThrow(() -> pluginService.updateStatus(plugin));
     }
 
     @Test
     void testDeletePlugins() {
-        PluginMetadata plugin = new PluginMetadata();
+        CustomPluginCMetadata plugin = new CustomPluginCMetadata();
         plugin.setId(1L);
         plugin.setJarFilePath("path/to/plugin.jar");
         Set<Long> ids = new HashSet<>(Collections.singletonList(1L));
@@ -129,9 +129,9 @@ class PluginServiceTest {
 
     @Test
     void testGetPlugins() {
-        Page<PluginMetadata> page = new PageImpl<>(Collections.singletonList(new PluginMetadata()));
+        Page<CustomPluginCMetadata> page = new PageImpl<>(Collections.singletonList(new CustomPluginCMetadata()));
         when(metadataDao.findAll(any(Specification.class), any(PageRequest.class))).thenReturn(page);
-        Page<PluginMetadata> result = pluginService.getPlugins(null, 0, 10);
+        Page<CustomPluginCMetadata> result = pluginService.getPlugins(null, 0, 10);
         assertFalse(result.isEmpty());
         verify(metadataDao, times(1)).findAll(any(Specification.class), any(PageRequest.class));
     }

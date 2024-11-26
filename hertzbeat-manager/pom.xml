@@ -243,17 +243,11 @@
                     <include>*.xml</include>
                     <include>banner.txt</include>
                     <include>define/**</include>
+                    <include>plugin/**</include>
                     <include>db/**</include>
                     <include>templates/**</include>
                     <include>**/*.html</include>
                 </includes>
-            </resource>
-            <resource>
-                <directory>src/main/java/org/apache/hertzbeat/manager/component/plugin/define</directory>
-                <filtering>true</filtering>
-                <excludes>
-                    <exclude>*.yml</exclude>
-                </excludes>
             </resource>
         </resources>
         <plugins>

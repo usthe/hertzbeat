@@ -61,7 +61,7 @@ public class PluginItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "metadata_id")
     @JsonIgnore
-    private PluginMetadata pluginMetadata;
+    private CustomPluginCMetadata customPluginCMetadata;
 
     @Schema(title = "Plugin implementation class full path", example = "org.apache.hertzbeat.plugin.impl.DemoPluginImpl", accessMode = READ_WRITE)
     private String classIdentifier;

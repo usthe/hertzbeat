@@ -100,7 +100,7 @@ export class CustomPluginComponent implements OnInit {
 
   loadPluginsTable() {
     this.tableLoading = true;
-    let pluginsInit$ = this.pluginService.loadPlugins(this.search, 1, this.pageIndex - 1, this.pageSize).subscribe(
+    let pluginsInit$ = this.pluginService.loadPlugins(this.search, 'custom', this.pageIndex - 1, this.pageSize).subscribe(
       message => {
         this.tableLoading = false;
         this.checkedAll = false;

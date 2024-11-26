@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.hertzbeat.common.entity.dto.Message;
 import org.apache.hertzbeat.common.entity.dto.CustomPlugin;
 import org.apache.hertzbeat.common.entity.dto.OfficialPlugin;
-import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
+import org.apache.hertzbeat.common.entity.plugin.CustomPluginCMetadata;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParam;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParametersVO;
 import org.apache.hertzbeat.manager.service.PluginService;
@@ -70,13 +70,13 @@ public class PluginController {
 
 
 
-    @GetMapping
+    @GetMapping("/custom/instances")
     @Operation(summary = "Get Plugins information", description = "Obtain plugins information based on conditions")
-    public ResponseEntity<Message<Page<PluginMetadata>>> getPlugins(
+    public ResponseEntity<Message<Page<CustomPluginCMetadata>>> getPlugins(
         @Parameter(description = "plugin name search", example = "status") @RequestParam(required = false) String search,
         @Parameter(description = "List current page", example = "0") @RequestParam(defaultValue = "0") int pageIndex,
         @Parameter(description = "Number of list pagination", example = "8") @RequestParam(defaultValue = "8") int pageSize) {
-        Page<PluginMetadata> alertPage = pluginService.getPlugins(search, pageIndex, pageSize);
+        Page<CustomPluginCMetadata> alertPage = pluginService.getPlugins(search, pageIndex, pageSize);
         return ResponseEntity.ok(Message.success(alertPage));
     }
 
@@ -104,7 +104,7 @@ public class PluginController {
 
     @PutMapping()
     @Operation(summary = "Update enable status", description = "Delete plugins based on ID")
-    public ResponseEntity<Message<Void>> updatePluginStatus(@RequestBody PluginMetadata plugin) {
+    public ResponseEntity<Message<Void>> updatePluginStatus(@RequestBody CustomPluginCMetadata plugin) {
         pluginService.updateStatus(plugin);
         return ResponseEntity.ok(Message.success("Update success"));
     }
