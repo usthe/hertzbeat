@@ -238,7 +238,7 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>*.yml</include>
+                    <include>**/*.yml</include>
                     <include>*.properties</include>
                     <include>*.xml</include>
                     <include>banner.txt</include>
@@ -247,13 +247,6 @@
                     <include>templates/**</include>
                     <include>**/*.html</include>
                 </includes>
-            </resource>
-            <resource>
-                <directory>src/main/java/org/apache/hertzbeat/manager/component/plugin/define</directory>
-                <filtering>true</filtering>
-                <excludes>
-                    <exclude>*.yml</exclude>
-                </excludes>
             </resource>
         </resources>
         <plugins>

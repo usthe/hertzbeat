@@ -71,7 +71,7 @@ import org.apache.hertzbeat.manager.service.PluginService;
 import org.apache.hertzbeat.plugin.PostAlertPlugin;
 import org.apache.hertzbeat.plugin.Plugin;
 import org.apache.hertzbeat.plugin.PostCollectPlugin;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -88,6 +88,8 @@ import org.yaml.snakeyaml.error.YAMLException;
 @Service
 @RequiredArgsConstructor
 public class PluginServiceImpl implements PluginService {
+
+    private final ApplicationContext applicationContext;
 
     private final PluginMetadataDao metadataDao;
 
@@ -354,9 +356,17 @@ public class PluginServiceImpl implements PluginService {
         metadata.setName(officialPlugin.getName());
         metadata.setEnableStatus(true);
         Yaml yaml = new Yaml();
-        Resource resource = new ClassPathResource(String.format("src/main/java/org/apache/hertzbeat/manager/component/plugin/define/%s.yml", officialPlugin.getType()));
-        PluginConfig pluginConfig = yaml.loadAs(resource.getInputStream(), PluginConfig.class);
-        metadata.setParamCount(CollectionUtils.size(pluginConfig.getParams()));
+        String filename = officialPlugin.getType() + ".yml";
+        Resource resource = applicationContext.getResource("classpath:" + filename);
+
+        if (resource.exists()) {
+            PluginConfig config = yaml.loadAs(resource.getInputStream(), PluginConfig.class);
+            metadata.setParamCount(CollectionUtils.size(config.getParams()));
+        } else {
+            log.error("Failed to load plugin config file:{}", filename);
+            throw new CommonException("Failed to load plugin config file:" + filename);
+        }
+
         metadataDao.save(metadata);
         List<PluginItem> pluginItems = new ArrayList<>();
         pluginItems.add(new PluginItem(OfficialPluginEnum.getClassNameByPluginName(officialPlugin.getName()), PluginType.POST_ALERT));
