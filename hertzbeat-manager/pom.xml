@@ -238,7 +238,7 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>*.yml</include>
+                    <include>**/*.yml</include>
                     <include>*.properties</include>
                     <include>*.xml</include>
                     <include>banner.txt</include>

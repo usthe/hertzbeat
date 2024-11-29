@@ -56,8 +56,8 @@ import org.apache.hertzbeat.common.constants.PluginType;
 import org.apache.hertzbeat.common.entity.dto.CustomPlugin;
 import org.apache.hertzbeat.common.entity.dto.OfficialPlugin;
 import org.apache.hertzbeat.common.entity.job.Configmap;
-import org.apache.hertzbeat.common.entity.plugin.CustomPluginCMetadata;
 import org.apache.hertzbeat.common.entity.plugin.PluginItem;
+import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
 import org.apache.hertzbeat.common.entity.plugin.PluginConfig;
 import org.apache.hertzbeat.common.entity.plugin.PluginContext;
 import org.apache.hertzbeat.common.support.exception.CommonException;
@@ -71,7 +71,7 @@ import org.apache.hertzbeat.manager.service.PluginService;
 import org.apache.hertzbeat.plugin.PostAlertPlugin;
 import org.apache.hertzbeat.plugin.Plugin;
 import org.apache.hertzbeat.plugin.PostCollectPlugin;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -88,6 +88,8 @@ import org.yaml.snakeyaml.error.YAMLException;
 @Service
 @RequiredArgsConstructor
 public class PluginServiceImpl implements PluginService {
+
+    private final ApplicationContext applicationContext;
 
     private final PluginMetadataDao metadataDao;
 
@@ -122,15 +124,15 @@ public class PluginServiceImpl implements PluginService {
     @Override
     @Transactional
     public void deletePlugins(Set<Long> ids) {
-        List<CustomPluginCMetadata> plugins = metadataDao.findAllById(ids);
+        List<PluginMetadata> plugins = metadataDao.findAllById(ids);
         // disable the plugins that need to be removed
-        for (CustomPluginCMetadata plugin : plugins) {
+        for (PluginMetadata plugin : plugins) {
             plugin.setEnableStatus(false);
             updateStatus(plugin);
         }
         // reload classloader
         loadJarToClassLoader();
-        for (CustomPluginCMetadata plugin : plugins) {
+        for (PluginMetadata plugin : plugins) {
             try {
                 // delete jar file
                 File jarFile = new File(plugin.getJarFilePath());
@@ -166,10 +168,10 @@ public class PluginServiceImpl implements PluginService {
     }
 
     @Override
-    public void updateStatus(CustomPluginCMetadata plugin) {
-        Optional<CustomPluginCMetadata> pluginMetadata = metadataDao.findById(plugin.getId());
+    public void updateStatus(PluginMetadata plugin) {
+        Optional<PluginMetadata> pluginMetadata = metadataDao.findById(plugin.getId());
         if (pluginMetadata.isPresent()) {
-            CustomPluginCMetadata metadata = pluginMetadata.get();
+            PluginMetadata metadata = pluginMetadata.get();
             metadata.setEnableStatus(plugin.getEnableStatus());
             metadataDao.save(metadata);
             syncSinglePluginStatus(metadata);
@@ -245,8 +247,8 @@ public class PluginServiceImpl implements PluginService {
      * @param jarFile jar file
      * @return return the result of jar package parsed
      */
-    public CustomPluginCMetadata validateJarFile(File jarFile) {
-        CustomPluginCMetadata metadata = new CustomPluginCMetadata();
+    public PluginMetadata validateJarFile(File jarFile) {
+        PluginMetadata metadata = new PluginMetadata();
         List<PluginItem> pluginItems = new ArrayList<>();
         AtomicInteger pluginImplementationCount = new AtomicInteger(0);
         try {
@@ -298,7 +300,7 @@ public class PluginServiceImpl implements PluginService {
         return metadata;
     }
 
-    private void validateMetadata(CustomPluginCMetadata metadata) {
+    private void validateMetadata(PluginMetadata metadata) {
         if (metadataDao.countPluginMetadataByName(metadata.getName()) != 0) {
             throw new CommonException("A plugin named " + metadata.getName() + " already exists");
         }
@@ -321,25 +323,25 @@ public class PluginServiceImpl implements PluginService {
         FileUtils.createParentDirectories(destFile);
         customPlugin.getJarFile().transferTo(destFile);
         List<PluginItem> pluginItems;
-        CustomPluginCMetadata customPluginCMetadata;
+        PluginMetadata pluginMetadata;
         try {
-            CustomPluginCMetadata parsed = validateJarFile(destFile);
+            PluginMetadata parsed = validateJarFile(destFile);
             pluginItems = parsed.getItems();
-            customPluginCMetadata = CustomPluginCMetadata.builder()
+            pluginMetadata = PluginMetadata.builder()
                 .name(customPlugin.getName())
                 .enableStatus(true)
                 .paramCount(parsed.getParamCount())
                 .items(pluginItems).jarFilePath(destFile.getAbsolutePath())
                 .gmtCreate(LocalDateTime.now())
                 .build();
-            validateMetadata(customPluginCMetadata);
+            validateMetadata(pluginMetadata);
         } catch (Exception e) {
             // verification failed, delete file
             FileUtils.delete(destFile);
             throw e;
         }
         // save plugin metadata
-        metadataDao.save(customPluginCMetadata);
+        metadataDao.save(pluginMetadata);
         itemDao.saveAll(pluginItems);
         // load jar to classloader
         loadJarToClassLoader();
@@ -350,17 +352,24 @@ public class PluginServiceImpl implements PluginService {
     @SneakyThrows
     @Override
     public void saveOfficialPlugin(OfficialPlugin officialPlugin) {
-        CustomPluginCMetadata metadata = new CustomPluginCMetadata();
+        PluginMetadata metadata = new PluginMetadata();
         metadata.setName(officialPlugin.getName());
         metadata.setEnableStatus(true);
         Yaml yaml = new Yaml();
-        Resource resource = new ClassPathResource(String.format("plugin/%s.yml", officialPlugin.getType()));
-        PluginConfig pluginConfig = yaml.loadAs(resource.getInputStream(), PluginConfig.class);
-        metadata.setParamCount(CollectionUtils.size(pluginConfig.getParams()));
-        List<PluginItem> pluginItems = new ArrayList<>();
-        pluginItems.add(new PluginItem(OfficialPluginEnum.getClassNameByPluginName(officialPlugin.getType()), PluginType.POST_ALERT));
-        metadata.setItems(pluginItems);
+        String filename = officialPlugin.getType() + ".yml";
+        Resource resource = applicationContext.getResource("classpath:" + filename);
+
+        if (resource.exists()) {
+            PluginConfig config = yaml.loadAs(resource.getInputStream(), PluginConfig.class);
+            metadata.setParamCount(CollectionUtils.size(config.getParams()));
+        } else {
+            log.error("Failed to load plugin config file:{}", filename);
+            throw new CommonException("Failed to load plugin config file:" + filename);
+        }
+
         metadataDao.save(metadata);
+        List<PluginItem> pluginItems = new ArrayList<>();
+        pluginItems.add(new PluginItem(OfficialPluginEnum.getClassNameByPluginName(officialPlugin.getName()), PluginType.POST_ALERT));
         itemDao.saveAll(pluginItems);
         syncPluginStatus();
     }
@@ -372,9 +381,9 @@ public class PluginServiceImpl implements PluginService {
     }
 
     @Override
-    public Page<CustomPluginCMetadata> getPlugins(String search, int pageIndex, int pageSize) {
+    public Page<PluginMetadata> getPlugins(String search, int pageIndex, int pageSize) {
         // Get tag information
-        Specification<CustomPluginCMetadata> specification = (root, query, criteriaBuilder) -> {
+        Specification<PluginMetadata> specification = (root, query, criteriaBuilder) -> {
             List<Predicate> andList = new ArrayList<>();
             if (search != null && !search.isEmpty()) {
                 Predicate predicateApp = criteriaBuilder.like(root.get("name"), "%" + search + "%");
@@ -398,10 +407,10 @@ public class PluginServiceImpl implements PluginService {
      */
     @PostConstruct
     private void syncPluginStatus() {
-        List<CustomPluginCMetadata> plugins = metadataDao.findAll();
+        List<PluginMetadata> plugins = metadataDao.findAll();
         Map<String, Boolean> statusMap = new HashMap<>();
         Map<String, Long> itemToPluginMetadataIdMap = new HashMap<>();
-        for (CustomPluginCMetadata plugin : plugins) {
+        for (PluginMetadata plugin : plugins) {
             for (PluginItem item : plugin.getItems()) {
                 statusMap.put(item.getClassIdentifier(), plugin.getEnableStatus());
                 itemToPluginMetadataIdMap.put(item.getClassIdentifier(), plugin.getId());
@@ -413,7 +422,7 @@ public class PluginServiceImpl implements PluginService {
         ITEM_TO_PLUGINMETADATAID_MAP.putAll(itemToPluginMetadataIdMap);
     }
 
-    private void syncSinglePluginStatus(CustomPluginCMetadata plugin) {
+    private void syncSinglePluginStatus(PluginMetadata plugin) {
         if (plugin == null || CollectionUtils.isEmpty(plugin.getItems())){
             return;
         }
@@ -461,8 +470,8 @@ public class PluginServiceImpl implements PluginService {
             System.gc();
         }
         PARAMS_CONFIG_MAP.clear();
-        List<CustomPluginCMetadata> plugins = metadataDao.findPluginMetadataByEnableStatusTrueAndAndJarFilePathIsNotNull();
-        for (CustomPluginCMetadata metadata : plugins) {
+        List<PluginMetadata> plugins = metadataDao.findPluginMetadataByEnableStatusTrue();
+        for (PluginMetadata metadata : plugins) {
             try {
                 List<URL> urls = loadLibInPlugin(metadata.getJarFilePath(), metadata.getId());
                 urls.add(new File(metadata.getJarFilePath()).toURI().toURL());
