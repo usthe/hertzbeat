@@ -37,7 +37,6 @@ import org.apache.hertzbeat.manager.service.NoticeConfigService;
 import org.apache.hertzbeat.manager.support.exception.AlertNoticeException;
 import org.apache.hertzbeat.manager.support.exception.IgnoreException;
 import org.apache.hertzbeat.plugin.PostAlertPlugin;
-import org.apache.hertzbeat.plugin.Plugin;
 import org.apache.hertzbeat.plugin.runner.PluginRunner;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -58,7 +57,6 @@ public class DispatcherAlarm implements InitializingBean {
     private final AlertStoreHandler alertStoreHandler;
     private final Map<Byte, AlertNotifyHandler> alertNotifyHandlerMap;
     private final PluginRunner pluginRunner;
-    private final CollectorJobScheduler collectorJobScheduler;
 
     public DispatcherAlarm(AlerterWorkerPool workerPool,
                            CommonDataQueue dataQueue,
@@ -73,7 +71,6 @@ public class DispatcherAlarm implements InitializingBean {
         this.alertStoreHandler = alertStoreHandler;
         this.pluginRunner = pluginRunner;
         alertNotifyHandlerMap = Maps.newHashMapWithExpectedSize(alertNotifyHandlerList.size());
-        this.collectorJobScheduler = collectorJobScheduler;
         alertNotifyHandlerList.forEach(r -> alertNotifyHandlerMap.put(r.type(), r));
     }
 

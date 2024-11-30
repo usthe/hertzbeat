@@ -17,18 +17,23 @@
 
 package org.apache.hertzbeat.manager.controller;
 
+import static org.apache.hertzbeat.common.constants.CommonConstants.FAIL_CODE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.common.entity.dto.Message;
 import org.apache.hertzbeat.common.entity.dto.CustomPlugin;
 import org.apache.hertzbeat.common.entity.dto.OfficialPlugin;
-import org.apache.hertzbeat.common.entity.plugin.CustomPluginCMetadata;
+import org.apache.hertzbeat.common.entity.message.CollectRep;
+import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParam;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParametersVO;
 import org.apache.hertzbeat.manager.service.PluginService;
@@ -36,6 +41,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,10 +52,11 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * plugin management API
  */
-@io.swagger.v3.oas.annotations.tags.Tag(name = "Plugin Manage API")
+@Tag(name = "Plugin Manage API")
 @RestController
 @RequestMapping(path = "/api/plugin", produces = {APPLICATION_JSON_VALUE})
 @RequiredArgsConstructor
+@Slf4j
 public class PluginController {
 
     private final PluginService pluginService;
@@ -57,9 +64,15 @@ public class PluginController {
     @PostMapping("/custom")
     @Operation(summary = "upload custom plugin", description = "upload custom plugin")
     public ResponseEntity<Message<Void>> uploadCustomPlugin(@Valid CustomPlugin customPlugin) {
-        pluginService.saveCustomPlugin(customPlugin);
-        return ResponseEntity.ok(Message.success("Add success"));
+        try {
+            pluginService.saveCustomPlugin(customPlugin);
+            return ResponseEntity.ok(Message.success("Add success"));
+        } catch (IOException e) {
+            log.error("Failed to save custom plugin", e);
+            return ResponseEntity.badRequest().body(Message.fail(FAIL_CODE, "Failed to save custom plugin: " + e.getMessage()));
+        }
     }
+
 
     @PostMapping("/official")
     @Operation(summary = "upload official plugin", description = "upload official plugin")
@@ -70,25 +83,23 @@ public class PluginController {
 
 
 
-    @GetMapping("/custom/instances")
+    @GetMapping("/instances/{type}")
     @Operation(summary = "Get Plugins information", description = "Obtain plugins information based on conditions")
-    public ResponseEntity<Message<Page<CustomPluginCMetadata>>> getPlugins(
-        @Parameter(description = "plugin name search", example = "status") @RequestParam(required = false) String search,
+    public ResponseEntity<Message<Page<PluginMetadata>>> getPlugins(
+        @Parameter(description = "plugin name search", example = "status") @RequestParam(required = false) String name,
+        @Parameter(description = "plugin type search", example = "official or custom") @PathVariable String type,
         @Parameter(description = "List current page", example = "0") @RequestParam(defaultValue = "0") int pageIndex,
         @Parameter(description = "Number of list pagination", example = "8") @RequestParam(defaultValue = "8") int pageSize) {
-        Page<CustomPluginCMetadata> alertPage = pluginService.getPlugins(search, pageIndex, pageSize);
+        Page<PluginMetadata> alertPage = pluginService.getPlugins(name, type, pageIndex, pageSize);
         return ResponseEntity.ok(Message.success(alertPage));
     }
+
 
     @GetMapping("/official/infos")
     public ResponseEntity<Message<List<Map<String, String>>>> getOfficialPluginInfos() {
         return ResponseEntity.ok(Message.success(pluginService.getOfficialPluginInfos()));
     }
 
-    @GetMapping("/official/instances")
-    public ResponseEntity<Message<List<Map<String, String>>>> getOfficialPluginInstances() {
-        return ResponseEntity.ok(Message.success(pluginService.getOfficialPluginInfos()));
-    }
 
 
     @DeleteMapping
@@ -104,7 +115,7 @@ public class PluginController {
 
     @PutMapping()
     @Operation(summary = "Update enable status", description = "Delete plugins based on ID")
-    public ResponseEntity<Message<Void>> updatePluginStatus(@RequestBody CustomPluginCMetadata plugin) {
+    public ResponseEntity<Message<Void>> updatePluginStatus(@RequestBody PluginMetadata plugin) {
         pluginService.updateStatus(plugin);
         return ResponseEntity.ok(Message.success("Update success"));
     }

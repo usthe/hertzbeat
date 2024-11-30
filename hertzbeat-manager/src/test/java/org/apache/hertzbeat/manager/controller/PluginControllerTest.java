@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.hertzbeat.common.constants.CommonConstants;
-import org.apache.hertzbeat.common.entity.plugin.CustomPluginCMetadata;
+import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
 import org.apache.hertzbeat.common.util.JsonUtil;
 import org.apache.hertzbeat.manager.service.PluginService;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,7 +100,7 @@ class PluginControllerTest {
 
     @Test
     void updatePluginStatus() throws Exception {
-        CustomPluginCMetadata metadata = new CustomPluginCMetadata();
+        PluginMetadata metadata = new PluginMetadata();
         metadata.setId(6565463543L);
         metadata.setEnableStatus(true);
 

@@ -47,7 +47,6 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -73,6 +72,7 @@ import org.apache.hertzbeat.plugin.Plugin;
 import org.apache.hertzbeat.plugin.PostCollectPlugin;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -135,12 +135,12 @@ public class PluginServiceImpl implements PluginService {
         for (PluginMetadata plugin : plugins) {
             try {
                 // delete jar file
-                File jarFile = new File(plugin.getJarFilePath());
+                File jarFile = new File(plugin.getFilePath());
                 if (jarFile.exists()) {
                     FileUtils.delete(jarFile);
                 }
                 // removing jar files that are dependencies for the plugin
-                File otherLibDir = new File(getOtherLibDir(plugin.getJarFilePath()));
+                File otherLibDir = new File(getOtherLibDir(plugin.getFilePath()));
                 if (otherLibDir.exists()) {
                     FileUtils.deleteDirectory(otherLibDir);
                 }
@@ -218,13 +218,6 @@ public class PluginServiceImpl implements PluginService {
 
     }
 
-    /**
-     * get official plugin instances
-     */
-    @Override
-    public List<Map<String, String>> getOfficialPluginInstances() {
-        return List.of();
-    }
 
     private void syncPluginParamMap(Long pluginMetadataId, List<PluginParam> params, boolean isDelete) {
         if (isDelete) {
@@ -307,9 +300,8 @@ public class PluginServiceImpl implements PluginService {
     }
 
     @Override
-    @SneakyThrows
     @Transactional
-    public void saveCustomPlugin(CustomPlugin customPlugin) {
+    public void saveCustomPlugin(CustomPlugin customPlugin) throws IOException {
         String jarPath = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).getAbsolutePath();
         Path extLibPath = Paths.get(new File(jarPath).getParent(), "plugin-lib");
         File extLibDir = extLibPath.toFile();
@@ -329,9 +321,10 @@ public class PluginServiceImpl implements PluginService {
             pluginItems = parsed.getItems();
             pluginMetadata = PluginMetadata.builder()
                 .name(customPlugin.getName())
+                .type("custom")
                 .enableStatus(true)
                 .paramCount(parsed.getParamCount())
-                .items(pluginItems).jarFilePath(destFile.getAbsolutePath())
+                .items(pluginItems).filePath(destFile.getAbsolutePath())
                 .gmtCreate(LocalDateTime.now())
                 .build();
             validateMetadata(pluginMetadata);
@@ -349,29 +342,35 @@ public class PluginServiceImpl implements PluginService {
         syncPluginStatus();
     }
 
-    @SneakyThrows
     @Override
     public void saveOfficialPlugin(OfficialPlugin officialPlugin) {
-        PluginMetadata metadata = new PluginMetadata();
-        metadata.setName(officialPlugin.getName());
-        metadata.setEnableStatus(true);
-        Yaml yaml = new Yaml();
-        String filename = officialPlugin.getType() + ".yml";
-        Resource resource = applicationContext.getResource("classpath:" + filename);
-
-        if (resource.exists()) {
-            PluginConfig config = yaml.loadAs(resource.getInputStream(), PluginConfig.class);
-            metadata.setParamCount(CollectionUtils.size(config.getParams()));
-        } else {
-            log.error("Failed to load plugin config file:{}", filename);
-            throw new CommonException("Failed to load plugin config file:" + filename);
-        }
-
-        metadataDao.save(metadata);
         List<PluginItem> pluginItems = new ArrayList<>();
-        pluginItems.add(new PluginItem(OfficialPluginEnum.getClassNameByPluginName(officialPlugin.getName()), PluginType.POST_ALERT));
+        pluginItems.add(new PluginItem(OfficialPluginEnum.getClassNameByPluginName(officialPlugin.getType()), PluginType.POST_ALERT));
+        PluginConfig pluginConfig = loadInnerPluginConfig(officialPlugin.getType());
+
+        PluginMetadata pluginMetadata = PluginMetadata.builder()
+                .name(officialPlugin.getName())
+                .type("official")
+                .enableStatus(true)
+                .paramCount(CollectionUtils.size(pluginConfig.getParams()))
+                .items(pluginItems)
+                .gmtCreate(LocalDateTime.now())
+                .build();
+        metadataDao.save(pluginMetadata);
         itemDao.saveAll(pluginItems);
         syncPluginStatus();
+    }
+
+    public PluginConfig loadInnerPluginConfig(String pluginType) {
+        Yaml yaml = new Yaml();
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        Resource resource = resolver.getResource("classpath:plugin/" + pluginType + ".yml");
+        try (InputStream inputStream = resource.getInputStream()) {
+            return yaml.loadAs(inputStream, PluginConfig.class);
+        } catch (IOException e) {
+            log.error("Failed to load plugin config file:{}", e.getMessage());
+            throw new CommonException("Failed to load plugin config file:" + e.getMessage());
+        }
     }
 
 
@@ -381,13 +380,17 @@ public class PluginServiceImpl implements PluginService {
     }
 
     @Override
-    public Page<PluginMetadata> getPlugins(String search, int pageIndex, int pageSize) {
+    public Page<PluginMetadata> getPlugins(String name, String type, int pageIndex, int pageSize) {
         // Get tag information
         Specification<PluginMetadata> specification = (root, query, criteriaBuilder) -> {
             List<Predicate> andList = new ArrayList<>();
-            if (search != null && !search.isEmpty()) {
-                Predicate predicateApp = criteriaBuilder.like(root.get("name"), "%" + search + "%");
+            if (name != null && !name.isEmpty()) {
+                Predicate predicateApp = criteriaBuilder.like(root.get("name"), "%" + name + "%");
                 andList.add(predicateApp);
+            }
+            if (type != null && !type.isEmpty()) {
+                Predicate predicateType = criteriaBuilder.equal(root.get("type"), type);
+                andList.add(predicateType);
             }
             Predicate[] andPredicates = new Predicate[andList.size()];
             Predicate andPredicate = criteriaBuilder.and(andList.toArray(andPredicates));
@@ -473,8 +476,8 @@ public class PluginServiceImpl implements PluginService {
         List<PluginMetadata> plugins = metadataDao.findPluginMetadataByEnableStatusTrue();
         for (PluginMetadata metadata : plugins) {
             try {
-                List<URL> urls = loadLibInPlugin(metadata.getJarFilePath(), metadata.getId());
-                urls.add(new File(metadata.getJarFilePath()).toURI().toURL());
+                List<URL> urls = loadLibInPlugin(metadata.getFilePath(), metadata.getId());
+                urls.add(new File(metadata.getFilePath()).toURI().toURL());
                 pluginClassLoaders.add(new URLClassLoader(urls.toArray(new URL[0]), Plugin.class.getClassLoader()));
             } catch (MalformedURLException e) {
                 log.error("Failed to load plugin:{}", e.getMessage());

@@ -26,6 +26,9 @@ import org.apache.hertzbeat.plugin.Plugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * OfficialPluginServiceFactory
+ */
 @Component
 public class OfficialPluginServiceFactory {
 

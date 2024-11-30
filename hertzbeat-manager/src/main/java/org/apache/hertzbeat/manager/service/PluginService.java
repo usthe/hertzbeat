@@ -17,6 +17,7 @@
 
 package org.apache.hertzbeat.manager.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,7 +26,7 @@ import java.util.function.Consumer;
 import lombok.SneakyThrows;
 import org.apache.hertzbeat.common.entity.dto.CustomPlugin;
 import org.apache.hertzbeat.common.entity.dto.OfficialPlugin;
-import org.apache.hertzbeat.common.entity.plugin.CustomPluginCMetadata;
+import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
 import org.apache.hertzbeat.common.entity.plugin.PluginContext;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParam;
 import org.apache.hertzbeat.manager.pojo.dto.PluginParametersVO;
@@ -39,7 +40,7 @@ public interface PluginService {
     /**
      * save custom plugin
      */
-    void saveCustomPlugin(CustomPlugin customPlugin);
+    void saveCustomPlugin(CustomPlugin customPlugin) throws IOException;
 
     /**
      * save official plugin
@@ -60,12 +61,13 @@ public interface PluginService {
     /**
      * get plugin page list
      *
-     * @param search        plugin name search
+     * @param name        plugin name search
+     * @param type        plugin type search
      * @param pageIndex     List current page
      * @param pageSize      Number of list pagination
      * @return Plugins
      */
-    Page<CustomPluginCMetadata> getPlugins(String search, int pageIndex, int pageSize);
+    Page<PluginMetadata> getPlugins(String name, String type, int pageIndex, int pageSize);
 
     /**
      * execute plugin
@@ -93,7 +95,7 @@ public interface PluginService {
      */
     void deletePlugins(Set<Long> ids);
 
-    void updateStatus(CustomPluginCMetadata plugin);
+    void updateStatus(PluginMetadata plugin);
 
     /**
      * get param define
@@ -112,9 +114,5 @@ public interface PluginService {
      */
     List<Map<String, String>> getOfficialPluginInfos();
 
-    /**
-     * get official plugin instances
-     */
-    List<Map<String, String>> getOfficialPluginInstances();
 
 }

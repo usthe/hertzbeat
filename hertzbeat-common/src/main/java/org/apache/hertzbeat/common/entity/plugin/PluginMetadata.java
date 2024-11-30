@@ -46,14 +46,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * Plugin Entity
  */
 @Entity
-@Table(name = "hzb_custom_plugin_metadata")
+@Table(name = "hzb_plugin_metadata")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Plugin Entity")
 @EntityListeners(AuditingEntityListener.class)
-public class CustomPluginCMetadata {
+public class PluginMetadata {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,8 +67,12 @@ public class CustomPluginCMetadata {
     @Schema(title = "Plugin activation status", example = "true", accessMode = READ_WRITE)
     private Boolean enableStatus;
 
-    @Schema(title = "Jar file path", example = "true", accessMode = READ_WRITE)
-    private String jarFilePath;
+    @Schema(title = "file path", example = "true", accessMode = READ_WRITE)
+    private String filePath;
+
+    @Schema(title = "Plugin type", example = "official or custom", accessMode = READ_WRITE)
+    @NotNull
+    private String type;
 
     @Override
     public boolean equals(Object o) {
@@ -78,14 +82,14 @@ public class CustomPluginCMetadata {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        CustomPluginCMetadata that = (CustomPluginCMetadata) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(enableStatus, that.enableStatus) && Objects.equals(jarFilePath,
-            that.jarFilePath) && Objects.equals(creator, that.creator) && Objects.equals(gmtCreate, that.gmtCreate);
+        PluginMetadata that = (PluginMetadata) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(enableStatus, that.enableStatus) && Objects.equals(filePath,
+            that.filePath) && Objects.equals(creator, that.creator) && Objects.equals(gmtCreate, that.gmtCreate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, enableStatus, jarFilePath, creator, gmtCreate);
+        return Objects.hash(id, name, enableStatus, filePath, creator, gmtCreate);
     }
 
     @Schema(title = "The creator of this record", example = "tom", accessMode = READ_ONLY)

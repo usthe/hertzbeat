@@ -18,14 +18,14 @@
 package org.apache.hertzbeat.manager.dao;
 
 import java.util.List;
-import org.apache.hertzbeat.common.entity.plugin.CustomPluginCMetadata;
+import org.apache.hertzbeat.common.entity.plugin.PluginMetadata;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
  * plugin metadata repository
  */
-public interface PluginMetadataDao extends JpaRepository<CustomPluginCMetadata, Long>, JpaSpecificationExecutor<CustomPluginCMetadata> {
+public interface PluginMetadataDao extends JpaRepository<PluginMetadata, Long>, JpaSpecificationExecutor<PluginMetadata> {
 
     /**
      * count by name
@@ -40,5 +40,20 @@ public interface PluginMetadataDao extends JpaRepository<CustomPluginCMetadata, 
      * find enabled plugins
      * @return plugins
      */
-    List<CustomPluginCMetadata> findPluginMetadataByEnableStatusTrueAndAndJarFilePathIsNotNull();
+    List<PluginMetadata> findPluginMetadataByEnableStatusTrue();
+
+
+    /**
+     * find plugin by type
+     * @param type type
+     * @return plugins
+     */
+    List<PluginMetadata> findPluginMetadataByType(String type);
+
+    /**
+     * count by type not
+     * @param type type
+     * @return count
+     */
+    int countPluginMetadataByTypeNot(String type);
 }

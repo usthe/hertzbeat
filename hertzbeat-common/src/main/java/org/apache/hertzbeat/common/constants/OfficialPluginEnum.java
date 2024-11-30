@@ -28,7 +28,7 @@ public enum OfficialPluginEnum {
     /*
       Official script plugin
      */
-    OFFICIAL_SCRIPT("define-official-script", "org.apache.hertzbeat.plugin.impl.ScriptExecutorPluginImpl");
+    OFFICIAL_SCRIPT("define-official-script", "org.apache.hertzbeat.manager.component.plugin.impl.ScriptExecutorPluginImpl");
 
     private final String pluginName;
     private final String className;
