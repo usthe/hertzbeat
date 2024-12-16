@@ -32,7 +32,7 @@ public interface HistoryDataReader {
     boolean isServerAvailable();
 
     /**
-     * query history range metrics data from tsdb
+     * query history range metrics data from time-series db
      * @param monitorId monitor id
      * @param app monitor type
      * @param metrics metrics
@@ -45,7 +45,7 @@ public interface HistoryDataReader {
             String label, String history);
 
     /**
-     * query history range interval metrics data from tsdb
+     * query history range interval metrics data from time-series db
      * max min mean metrics value
      * @param monitorId monitor id
      * @param app monitor type

@@ -131,6 +131,10 @@ warehouse:
       # The maximum number of history records retained, if this number is exceeded, half of the data in this configuration item will be deleted
       # (please set this configuration reasonably as history records can affect performance when it is large)
       max-history-record-num: 6000
+    duckdb:
+      enabled: false
+      driver-class-name: org.duckdb.DuckDBDriver
+      url: jdbc:duckdb:./data/hertzbeat.duckdb
     victoria-metrics:
       enabled: false
       url: http://localhost:8428

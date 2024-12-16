@@ -31,6 +31,8 @@ public interface WarehouseConstants {
      * History database name.
      */
     interface HistoryName {
+        String DUCKDB = "duckdb";
+
         String GREPTIME = "greptime";
 
         String INFLUXDB = "influxdb";

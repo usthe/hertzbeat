@@ -176,6 +176,11 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>org.duckdb</groupId>
+            <artifactId>duckdb_jdbc</artifactId>
+            <version>1.1.3</version>
+        </dependency>
+        <dependency>
             <groupId>cn.afterturn</groupId>
             <artifactId>easypoi-spring-boot-starter</artifactId>
             <version>${easy-poi.version}</version>
