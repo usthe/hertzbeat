@@ -33,7 +33,7 @@ import org.apache.hertzbeat.plugin.PostAlertPlugin;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-@Component("OfficialScriptPlugin")
+@Component("define-official-script")
 @Slf4j
 public class ScriptExecutorPluginImpl implements PostAlertPlugin {
 

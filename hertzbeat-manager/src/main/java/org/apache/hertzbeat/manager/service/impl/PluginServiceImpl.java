@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -346,32 +347,35 @@ public class PluginServiceImpl implements PluginService {
     public void saveOfficialPlugin(OfficialPlugin officialPlugin) {
         List<PluginItem> pluginItems = new ArrayList<>();
         pluginItems.add(new PluginItem(OfficialPluginEnum.getClassNameByPluginName(officialPlugin.getType()), PluginType.POST_ALERT));
-        PluginConfig pluginConfig = loadInnerPluginConfig(officialPlugin.getType());
-
-        PluginMetadata pluginMetadata = PluginMetadata.builder()
-                .name(officialPlugin.getName())
-                .type("official")
-                .enableStatus(true)
-                .paramCount(CollectionUtils.size(pluginConfig.getParams()))
-                .items(pluginItems)
-                .gmtCreate(LocalDateTime.now())
-                .build();
-        metadataDao.save(pluginMetadata);
-        itemDao.saveAll(pluginItems);
-        syncPluginStatus();
-    }
-
-    public PluginConfig loadInnerPluginConfig(String pluginType) {
         Yaml yaml = new Yaml();
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Resource resource = resolver.getResource("classpath:plugin/" + pluginType + ".yml");
+        Resource resource = resolver.getResource("classpath:plugin/" + officialPlugin.getType() + ".yml");
+
+        PluginMetadata pluginMetadata;
+        PluginConfig pluginConfig;
         try (InputStream inputStream = resource.getInputStream()) {
-            return yaml.loadAs(inputStream, PluginConfig.class);
+            pluginConfig = yaml.loadAs(inputStream, PluginConfig.class);
+            pluginMetadata = PluginMetadata.builder()
+                    .name(officialPlugin.getName())
+                    .type("official")
+                    .enableStatus(true)
+                    .paramCount(CollectionUtils.size(pluginConfig.getParams()))
+                    .items(pluginItems)
+                    .filePath(resource.getFile().getPath())
+                    .gmtCreate(LocalDateTime.now())
+                    .build();
         } catch (IOException e) {
             log.error("Failed to load plugin config file:{}", e.getMessage());
             throw new CommonException("Failed to load plugin config file:" + e.getMessage());
         }
+
+        metadataDao.save(pluginMetadata);
+        itemDao.saveAll(pluginItems);
+        PARAMS_CONFIG_MAP.put(pluginMetadata.getId(), pluginConfig);
+        syncPluginStatus();
     }
+
+
 
 
     @Override
@@ -473,7 +477,7 @@ public class PluginServiceImpl implements PluginService {
             System.gc();
         }
         PARAMS_CONFIG_MAP.clear();
-        List<PluginMetadata> plugins = metadataDao.findPluginMetadataByEnableStatusTrue();
+        List<PluginMetadata> plugins = metadataDao.findPluginMetadataByEnableStatusTrueAndTypeEquals("custom");
         for (PluginMetadata metadata : plugins) {
             try {
                 List<URL> urls = loadLibInPlugin(metadata.getFilePath(), metadata.getId());
@@ -484,6 +488,24 @@ public class PluginServiceImpl implements PluginService {
                 throw new CommonException("Failed to load plugin:" + e.getMessage());
             } catch (IOException exception) {
                 log.error("{} plugin file is missing, please delete the plugin and upload it again", metadata.getName());
+            }
+        }
+    }
+
+    /**
+     * loading inner official plugin
+     */
+    @PostConstruct
+    private void loadOfficialPlugin() {
+        List<PluginMetadata> plugins = metadataDao.findPluginMetadataByType("official");
+        Yaml yaml = new Yaml();
+        for (PluginMetadata metadata : plugins) {
+            try (InputStream inputStream = Files.newInputStream(Paths.get(metadata.getFilePath()))) {
+                PluginConfig pluginConfig = yaml.loadAs(inputStream, PluginConfig.class);
+                PARAMS_CONFIG_MAP.put(metadata.getId(), pluginConfig);
+            } catch (IOException e) {
+                log.error("Failed to load plugin config file:{}", e.getMessage());
+                throw new CommonException("Failed to load plugin config file:" + e.getMessage());
             }
         }
     }
@@ -531,6 +553,8 @@ public class PluginServiceImpl implements PluginService {
         }
         return libUrls;
     }
+
+
 
     /**
      * Read the plugin configuration file from the jar package

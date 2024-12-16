@@ -32,6 +32,7 @@ import org.apache.hertzbeat.common.entity.manager.NoticeTemplate;
 import org.apache.hertzbeat.common.queue.CommonDataQueue;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
 import org.apache.hertzbeat.common.support.SpringContextHolder;
+import org.apache.hertzbeat.manager.component.plugin.factory.OfficialPluginServiceFactory;
 import org.apache.hertzbeat.manager.scheduler.CollectorJobScheduler;
 import org.apache.hertzbeat.manager.service.NoticeConfigService;
 import org.apache.hertzbeat.manager.support.exception.AlertNoticeException;
@@ -57,6 +58,7 @@ public class DispatcherAlarm implements InitializingBean {
     private final AlertStoreHandler alertStoreHandler;
     private final Map<Byte, AlertNotifyHandler> alertNotifyHandlerMap;
     private final PluginRunner pluginRunner;
+    private final OfficialPluginServiceFactory officialPluginServiceFactory;
 
     public DispatcherAlarm(AlerterWorkerPool workerPool,
                            CommonDataQueue dataQueue,
@@ -64,13 +66,14 @@ public class DispatcherAlarm implements InitializingBean {
                            AlertStoreHandler alertStoreHandler,
                            List<AlertNotifyHandler> alertNotifyHandlerList,
                            PluginRunner pluginRunner,
-                           CollectorJobScheduler collectorJobScheduler) {
+                           OfficialPluginServiceFactory officialPluginServiceFactory) {
         this.workerPool = workerPool;
         this.dataQueue = dataQueue;
         this.noticeConfigService = noticeConfigService;
         this.alertStoreHandler = alertStoreHandler;
         this.pluginRunner = pluginRunner;
         alertNotifyHandlerMap = Maps.newHashMapWithExpectedSize(alertNotifyHandlerList.size());
+        this.officialPluginServiceFactory = officialPluginServiceFactory;
         alertNotifyHandlerList.forEach(r -> alertNotifyHandlerMap.put(r.type(), r));
     }
 

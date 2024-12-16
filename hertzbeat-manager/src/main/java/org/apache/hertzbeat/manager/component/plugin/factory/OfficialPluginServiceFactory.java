@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.apache.hertzbeat.plugin.Plugin;
+import org.apache.hertzbeat.common.entity.dto.OfficialPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,14 +32,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class OfficialPluginServiceFactory {
 
-    @Autowired
-    private Map<String, Plugin<?>> officialPluginsMap;
-
-    public List<Plugin<?>> getPlugins(List<String> pluginNames) {
-        return pluginNames.stream()
-            .map(name -> officialPluginsMap.get(name))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    }
+//    @Autowired
+    private List<OfficialPlugin> officialPluginList;
 
 }

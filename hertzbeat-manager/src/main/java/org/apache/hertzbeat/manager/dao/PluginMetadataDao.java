@@ -40,7 +40,7 @@ public interface PluginMetadataDao extends JpaRepository<PluginMetadata, Long>, 
      * find enabled plugins
      * @return plugins
      */
-    List<PluginMetadata> findPluginMetadataByEnableStatusTrue();
+    List<PluginMetadata> findPluginMetadataByEnableStatusTrueAndTypeEquals(String type);
 
 
     /**
@@ -50,10 +50,4 @@ public interface PluginMetadataDao extends JpaRepository<PluginMetadata, Long>, 
      */
     List<PluginMetadata> findPluginMetadataByType(String type);
 
-    /**
-     * count by type not
-     * @param type type
-     * @return count
-     */
-    int countPluginMetadataByTypeNot(String type);
 }

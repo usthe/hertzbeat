@@ -30,6 +30,7 @@ import org.apache.hertzbeat.common.entity.alerter.Alert;
 import org.apache.hertzbeat.common.entity.manager.NoticeReceiver;
 import org.apache.hertzbeat.common.entity.manager.NoticeTemplate;
 import org.apache.hertzbeat.common.queue.CommonDataQueue;
+import org.apache.hertzbeat.manager.component.plugin.factory.OfficialPluginServiceFactory;
 import org.apache.hertzbeat.manager.dao.PluginParamDao;
 import org.apache.hertzbeat.manager.scheduler.CollectorJobScheduler;
 import org.apache.hertzbeat.manager.service.NoticeConfigService;
@@ -71,6 +72,9 @@ class DispatcherAlarmTest {
     @Mock
     private PluginParamDao pluginParamDao;
 
+    @Mock
+    private OfficialPluginServiceFactory officialPluginServiceFactory;
+
     private DispatcherAlarm dispatcherAlarm;
 
     private static final int DISPATCH_THREADS = 3;
@@ -86,7 +90,8 @@ class DispatcherAlarmTest {
                 alertStoreHandler,
                 alertNotifyHandlerList,
                 pluginRunner,
-                collectorJobScheduler
+                collectorJobScheduler,
+                officialPluginServiceFactory
         );
     }
 
