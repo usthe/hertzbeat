@@ -77,7 +77,7 @@ spring:
       max-lifetime: 120000
 
   jpa:
-    show-sql: false
+    show-sql: true
     database-platform: org.eclipse.persistence.platform.database.MySQLPlatform
     database: h2
     properties:
@@ -125,14 +125,14 @@ warehouse:
   store:
     # store history metrics data, enable only one below
     jpa:
-      enabled: true
+      enabled: false
       # The maximum retention time for history records, after which records will be deleted
       expire-time: 1h
       # The maximum number of history records retained, if this number is exceeded, half of the data in this configuration item will be deleted
       # (please set this configuration reasonably as history records can affect performance when it is large)
       max-history-record-num: 6000
     duckdb:
-      enabled: false
+      enabled: true
       driver-class-name: org.duckdb.DuckDBDriver
       url: jdbc:duckdb:./data/hertzbeat.duckdb
     victoria-metrics:
