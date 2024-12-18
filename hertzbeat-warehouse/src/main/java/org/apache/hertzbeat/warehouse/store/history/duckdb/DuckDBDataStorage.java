@@ -1,7 +1,5 @@
 package org.apache.hertzbeat.warehouse.store.history.duckdb;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Connection;
@@ -9,7 +7,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAmount;
 import java.util.HashMap;
@@ -23,6 +20,7 @@ import org.apache.hertzbeat.common.constants.CommonConstants;
 import org.apache.hertzbeat.common.entity.dto.Value;
 import org.apache.hertzbeat.common.entity.message.CollectRep;
 import org.apache.hertzbeat.common.util.JsonUtil;
+import org.apache.hertzbeat.common.util.SnowFlakeIdGenerator;
 import org.apache.hertzbeat.common.util.TimePeriodUtil;
 import org.apache.hertzbeat.warehouse.store.history.AbstractHistoryDataStorage;
 import org.duckdb.DuckDBConnection;
@@ -41,7 +39,7 @@ import org.springframework.stereotype.Component;
 public class DuckDBDataStorage extends AbstractHistoryDataStorage {
 
     private static final Pattern SQL_SPECIAL_STRING_PATTERN = Pattern.compile("(\\\\)|(')");
-    private static final String CONSTANTS_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS hzb_history (monitorId LONG, app STRING, metrics STRING, time LONG, metric STRING, metricType INT, dou DOUBLE, str STRING, int32 INT, instance STRING)";
+    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS hzb_history (id LONG, monitorId LONG, app VARCHAR, metrics VARCHAR, metric VARCHAR, instance VARCHAR, metricType INT, str VARCHAR, int32 INT, dou DOUBLE, ts LONG)";
     private static final String INSERT_TABLE_DATA_SQL = "INSERT INTO hzb_history (monitorId, app, metrics, time, metric, metricType, dou, str, int32, instance) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String QUERY_HISTORY_WITH_INSTANCE_SQL = "SELECT time, instance, %s FROM hzb_history WHERE instance = '%s' AND time >= ? ORDER BY time DESC";
     private static final String QUERY_HISTORY_SQL = "SELECT time, instance, %s FROM hzb_history WHERE time >= ? ORDER BY time DESC";
@@ -61,7 +59,7 @@ public class DuckDBDataStorage extends AbstractHistoryDataStorage {
     private void initDuckDBDatabase() {
         try {
             DuckDBConnection conn = (DuckDBConnection) DriverManager.getConnection(duckDBUrl);
-            conn.prepareStatement(CONSTANTS_CREATE_TABLE).execute();
+            conn.prepareStatement(CREATE_TABLE).execute();
         } catch (SQLException e) {
             log.error("DuckDB create table error", e);
             throw new RuntimeException("DuckDB create table error");
@@ -79,55 +77,64 @@ public class DuckDBDataStorage extends AbstractHistoryDataStorage {
         }        
         List<CollectRep.Field> fieldsList = metricsData.getFieldsList();
 
-        try (
-                DuckDBConnection conn = (DuckDBConnection) DriverManager.getConnection(duckDBUrl);
-                var appender = conn.createAppender(DuckDBConnection.DEFAULT_SCHEMA, "hzb_history")) {
+        try (DuckDBConnection conn = (DuckDBConnection) DriverManager.getConnection(duckDBUrl);
+            var appender = conn.createAppender(DuckDBConnection.DEFAULT_SCHEMA, "hzb_history")) {
             for (CollectRep.ValueRow valueRow : metricsData.getValuesList()) {
                 for (int i = 0; i < fieldsList.size(); i++) {
                     CollectRep.Field field = fieldsList.get(i);
                     String columnValue = valueRow.getColumns(i);
                     appender.beginRow();
-                    // TODO: id
+                    // id
+                    appender.append(SnowFlakeIdGenerator.generateId());
+                    // monitorId
                     appender.append(metricsData.getId());
+                    // app
                     appender.append(metricsData.getApp());
+                    // metrics
                     appender.append(metricsData.getMetrics());
                     // metric
                     appender.append(field.getName());
                     // instance
                     Map<String, String> labels = new HashMap<>(8);
-
                     if (field.getLabel()) {
                         labels.put(field.getName(), columnValue);
                     }
                     appender.append(JsonUtil.toJson(labels));
+                    // metricType
                     appender.append(field.getType());
-                    if (CommonConstants.NULL_VALUE.equals(columnValue)) {
+                    if (!CommonConstants.NULL_VALUE.equals(columnValue)) {
                         switch (field.getType()) {
-                            case CommonConstants.TYPE_NUMBER:
-                                appender.append(Double.parseDouble(columnValue));
-                                appender.append(null);
-                                appender.append(null);
-                                break;
+                            // str
                             case CommonConstants.TYPE_STRING:
-                                appender.append(null);
                                 appender.append(formatStringValue(columnValue));
                                 appender.append(null);
+                                appender.append(null);
                                 break;
+                            // int32
                             case CommonConstants.TYPE_TIME:
                                 appender.append(null);
-                                appender.append(null);
                                 appender.append(Integer.parseInt(columnValue));
+                                appender.append(null);
+                                break;
+                            // dou
+                            case CommonConstants.TYPE_NUMBER:
+                                appender.append(null);
+                                appender.append(null);
+                                appender.append(Double.parseDouble(columnValue));
                                 break;
                             default:
+                                appender.append(null);
+                                appender.append(null);
                                 appender.append(Double.parseDouble(columnValue));
-                                appender.append(null);
-                                appender.append(null);
                                 break;
                         }
+                    } else {
+                        appender.append(null);
+                        appender.append(null);
+                        appender.append(null);
                     }
+                    // time
                     appender.append(metricsData.getTime());
-
-                    appender.append(JsonUtil.toJson(new HashMap<>()));
                     appender.endRow();
                 }
             }
