@@ -39,10 +39,15 @@ import org.springframework.stereotype.Component;
 public class DuckDBDataStorage extends AbstractHistoryDataStorage {
 
     private static final Pattern SQL_SPECIAL_STRING_PATTERN = Pattern.compile("(\\\\)|(')");
-    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS hzb_history (id LONG, monitorId LONG, app VARCHAR, metrics VARCHAR, metric VARCHAR, instance VARCHAR, metricType INT, str VARCHAR, int32 INT, dou DOUBLE, ts LONG)";
-    private static final String INSERT_TABLE_DATA_SQL = "INSERT INTO hzb_history (monitorId, app, metrics, time, metric, metricType, dou, str, int32, instance) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String QUERY_HISTORY_WITH_INSTANCE_SQL = "SELECT time, instance, %s FROM hzb_history WHERE instance = '%s' AND time >= ? ORDER BY time DESC";
-    private static final String QUERY_HISTORY_SQL = "SELECT time, instance, %s FROM hzb_history WHERE time >= ? ORDER BY time DESC";
+    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS main.hzb_history (id LONG, monitor_id LONG, app VARCHAR, metrics VARCHAR, metric VARCHAR, instance VARCHAR, metric_type INT, str VARCHAR, int32 INT, dou DOUBLE, ts LONG)";
+    private static final String QUERY_HISTORY_WITH_INSTANCE_SQL =
+            "SELECT ts, metric_type, instance, str, int32, dou FROM main.hzb_history WHERE monitor_id = %s AND app = %s AND metrics = %s AND metric = %s AND instance = %s AND ts >= now - %s order by ts desc";
+    private static final String QUERY_HISTORY_SQL =
+            "SELECT * FROM main.hzb_history WHERE monitor_id = %s AND app = %s AND metrics = %s AND metric = %s AND ts >= now - %s order by ts desc";
+    private static final String QUERY_HISTORY_INTERVAL_WITH_INSTANCE_SQL =
+            "SELECT first(ts), first(`%s`), avg(`%s`), min(`%s`), max(`%s`) FROM `%s` WHERE instance = '%s' AND ts >= now - %s interval(4h)";
+    private static final String QUERY_INSTANCE_SQL =
+            "SELECT DISTINCT instance FROM `%s` WHERE ts >= now - 1w";
 
     private final String duckDBUrl;
 
@@ -155,61 +160,40 @@ public class DuckDBDataStorage extends AbstractHistoryDataStorage {
         ;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-
         try {
-
-            // Build the base SQL query with correct column names
-            StringBuilder sql = new StringBuilder(
-                    "SELECT * FROM hzb_history WHERE monitorId = ? AND app = ? AND metrics = ? AND metric = ?");
-
-            // Add optional conditions
-            if (StringUtils.isNotBlank(label)) {
-                sql.append(" AND instance = ?");
-            }
-
-            // Add time condition if history parameter is provided
-            if (history != null) {
-                try {
-                    TemporalAmount temporalAmount = TimePeriodUtil.parseTokenTime(history);
-                    ZonedDateTime dateTime = ZonedDateTime.now().minus(temporalAmount);
-                    long timeBefore = dateTime.toEpochSecond() * 1000L;
-                    sql.append(" AND time >= ?");
-                } catch (Exception e) {
-                    log.error("Error parsing history time: {}", e.getMessage());
-                }
-            }
-
-            // Add ordering
-            sql.append(" ORDER BY time DESC");
-
-            // Prepare statement and set parameters
-            pstmt = connection.prepareStatement(sql.toString());
-            int paramIndex = 1;
-            pstmt.setLong(paramIndex++, monitorId);
-            pstmt.setString(paramIndex++, app);
-            pstmt.setString(paramIndex++, metrics);
-            pstmt.setString(paramIndex++, metric);
-
-            if (StringUtils.isNotBlank(label)) {
-                pstmt.setString(paramIndex++, label);
-            }
-
-            if (history != null) {
-                try {
-                    TemporalAmount temporalAmount = TimePeriodUtil.parseTokenTime(history);
-                    ZonedDateTime dateTime = ZonedDateTime.now().minus(temporalAmount);
-                    long timeBefore = dateTime.toEpochSecond() * 1000L;
-                    pstmt.setLong(paramIndex, timeBefore);
-                } catch (Exception e) {
-                    log.error("Error setting time parameter: {}", e.getMessage());
-                }
-            }
-
-            // Execute query and process results
+            String selectSql = label == null ? String.format(QUERY_HISTORY_SQL, monitorId, app, metrics, metric, history) :
+                    String.format(QUERY_HISTORY_WITH_INSTANCE_SQL, monitorId, app, metrics, metric, label, history);
+            pstmt = connection.prepareStatement(selectSql);
             rs = pstmt.executeQuery();
+            String str;
+            Integer int32;
+            Double dou;
             while (rs.next()) {
-                String value = "";
-                int metricType = rs.getInt("metricType"); // Assuming the column name is metricType
+                long ts = rs.getLong("ts");
+                int metricType = rs.getByte("metric_type");
+                switch (metric) {
+                    case CommonConstants.TYPE_STRING:
+                        rs.getString("str")
+                        break;
+                    // int32
+                    case CommonConstants.TYPE_TIME:
+                        appender.append(null);
+                        appender.append(Integer.parseInt(columnValue));
+                        appender.append(null);
+                        break;
+                    // dou
+                    case CommonConstants.TYPE_NUMBER:
+                        appender.append(null);
+                        appender.append(null);
+                        appender.append(Double.parseDouble(columnValue));
+                        break;
+                    default:
+                        appender.append(null);
+                        appender.append(null);
+                        appender.append(Double.parseDouble(columnValue));
+                        break;
+
+                }
 
                 if (metricType == CommonConstants.TYPE_NUMBER) {
                     Double douValue = rs.getDouble("dou");
@@ -234,7 +218,6 @@ public class DuckDBDataStorage extends AbstractHistoryDataStorage {
         } catch (SQLException e) {
             log.error("Error querying history metric data: ", e);
         } finally {
-            // Close resources in reverse order
             if (rs != null) {
                 try {
                     rs.close();
@@ -263,7 +246,6 @@ public class DuckDBDataStorage extends AbstractHistoryDataStorage {
 
     @Override
     public Map<String, List<Value>> getHistoryIntervalMetricData(Long monitorId, String app, String metrics, String metric, String label, String history) {
-        // Placeholder implementation, adjust based on requirements
         return new HashMap<>(8);
     }
 
