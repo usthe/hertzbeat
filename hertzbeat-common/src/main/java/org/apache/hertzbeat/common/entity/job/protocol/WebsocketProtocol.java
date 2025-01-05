@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WebsocketProtocol {
+public class WebsocketProtocol implements CommonRequestProtocol, Protocol {
     /**
      * IP ADDRESS OR DOMAIN NAME OF THE PEER HOST
      */

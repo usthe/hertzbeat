@@ -17,20 +17,12 @@
 
 package org.apache.hertzbeat.common.queue;
 
-import org.apache.hertzbeat.common.entity.alerter.Alert;
 import org.apache.hertzbeat.common.entity.message.CollectRep;
 
 /**
  * common data queue
  */
 public interface CommonDataQueue {
-
-    /**
-     * poll alert data
-     * @return alert data
-     * @throws InterruptedException when poll timeout
-     */
-    Alert pollAlertsData() throws InterruptedException;
 
     /**
      * poll collect metrics data for alerter
@@ -44,24 +36,30 @@ public interface CommonDataQueue {
      * @return metrics data
      * @throws InterruptedException when poll timeout
      */
-    CollectRep.MetricsData pollMetricsDataToPersistentStorage() throws InterruptedException;
+    CollectRep.MetricsData pollMetricsDataToStorage() throws InterruptedException;
 
     /**
-     * poll collect metrics data for real-time Storage
+     * poll service discovery data
      * @return metrics data
      * @throws InterruptedException when poll timeout
      */
-    CollectRep.MetricsData pollMetricsDataToRealTimeStorage() throws InterruptedException;
-    
-    /**
-     * offer alert data
-     * @param alert alert data
-     */
-    void sendAlertsData(Alert alert);
-    
+    CollectRep.MetricsData pollServiceDiscoveryData() throws InterruptedException;
+
     /**
      * send collect metrics data
      * @param metricsData metrics data
      */
     void sendMetricsData(CollectRep.MetricsData metricsData);
+
+    /**
+     * send metrics data to storage from alerter
+     * @param metricsData metrics data
+     */
+    void sendMetricsDataToStorage(CollectRep.MetricsData metricsData);
+
+    /**
+     * send service discovery data
+     * @param metricsData service discovery data
+     */
+    void sendServiceDiscoveryData(CollectRep.MetricsData metricsData);
 }

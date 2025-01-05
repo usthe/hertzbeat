@@ -20,7 +20,6 @@ package org.apache.hertzbeat.common.queue.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.Map;
-import org.apache.hertzbeat.common.entity.alerter.Alert;
 import org.apache.hertzbeat.common.entity.message.CollectRep;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,21 +37,6 @@ class InMemoryCommonDataQueueTest {
     }
 
     @Test
-    void testAlertsData() throws InterruptedException {
-
-        var alert = new Alert();
-
-        queue.sendAlertsData(alert);
-        assertEquals(1, queue.getQueueSizeMetricsInfo().get("alertDataQueue"));
-
-        var polledAlert = queue.pollAlertsData();
-        assertEquals(0, queue.getQueueSizeMetricsInfo().get("alertDataQueue"));
-
-        assertNotNull(polledAlert);
-        assertEquals(alert, polledAlert);
-    }
-
-    @Test
     void testMetricsData() throws InterruptedException {
 
         var metricsData = CollectRep.MetricsData.newBuilder().build();
@@ -63,53 +47,35 @@ class InMemoryCommonDataQueueTest {
 
         assertNotNull(polledMetricsData);
         assertEquals(metricsData, polledMetricsData);
-
-        polledMetricsData = queue.pollMetricsDataToPersistentStorage();
-
-        assertNotNull(polledMetricsData);
-        assertEquals(metricsData, polledMetricsData);
-
-        polledMetricsData = queue.pollMetricsDataToRealTimeStorage();
-
-        assertNotNull(polledMetricsData);
-        assertEquals(metricsData, polledMetricsData);
     }
 
     @Test
     void testGetQueueSizeMetricsInfo() {
 
         Map<String, Integer> metricsInfo = queue.getQueueSizeMetricsInfo();
-
-        assertEquals(0, metricsInfo.get("alertDataQueue"));
+        
         assertEquals(0, metricsInfo.get("metricsDataToAlertQueue"));
-        assertEquals(0, metricsInfo.get("metricsDataToPersistentStorageQueue"));
-        assertEquals(0, metricsInfo.get("metricsDataToMemoryStorageQueue"));
-
-        queue.sendAlertsData(new Alert());
+        assertEquals(0, metricsInfo.get("metricsDataToStorageQueue"));
+        
         queue.sendMetricsData(CollectRep.MetricsData.newBuilder().build());
 
         metricsInfo = queue.getQueueSizeMetricsInfo();
-
-        assertEquals(1, metricsInfo.get("alertDataQueue"));
+        
         assertEquals(1, metricsInfo.get("metricsDataToAlertQueue"));
-        assertEquals(1, metricsInfo.get("metricsDataToPersistentStorageQueue"));
-        assertEquals(1, metricsInfo.get("metricsDataToMemoryStorageQueue"));
+        assertEquals(0, metricsInfo.get("metricsDataToStorageQueue"));
     }
 
     @Test
     void testDestroy() {
-
-        queue.sendAlertsData(new Alert());
+        
         queue.sendMetricsData(CollectRep.MetricsData.newBuilder().build());
 
         queue.destroy();
 
         Map<String, Integer> metricsInfo = queue.getQueueSizeMetricsInfo();
-
-        assertEquals(0, metricsInfo.get("alertDataQueue"));
+        
         assertEquals(0, metricsInfo.get("metricsDataToAlertQueue"));
-        assertEquals(0, metricsInfo.get("metricsDataToPersistentStorageQueue"));
-        assertEquals(0, metricsInfo.get("metricsDataToMemoryStorageQueue"));
+        assertEquals(0, metricsInfo.get("metricsDataToStorageQueue"));
     }
 
 }

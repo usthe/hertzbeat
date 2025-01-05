@@ -74,7 +74,6 @@ class MonitorControllerTest {
 
         MonitorDto monitorDto = new MonitorDto();
         monitorDto.setMonitor(monitor);
-        monitorDto.setDetected(true);
         monitorDto.setParams(params);
         return monitorDto;
     }
@@ -169,38 +168,6 @@ class MonitorControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value((int) CommonConstants.SUCCESS_CODE))
                 .andExpect(jsonPath("$.msg").value("Detect success."))
-                .andReturn();
-    }
-
-    @Test
-    void addNewMonitorOptionalMetrics() throws Exception {
-        MonitorDto monitorDto = dataTest();
-
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/monitor/optional")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.toJson(monitorDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value((int) CommonConstants.SUCCESS_CODE))
-                .andExpect(jsonPath("$.msg").value("Add success"))
-                .andReturn();
-    }
-
-    @Test
-    void getMonitorMetrics() throws Exception {
-
-        List<String> metricNames = new ArrayList<>();
-
-        Mockito.when(monitorService.getMonitorMetrics("app"))
-                .thenReturn(metricNames);
-
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/monitor/metric/{app}", "app"))
-                .andExpect(jsonPath("$.code").value((int) CommonConstants.SUCCESS_CODE))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/monitor/metric"))
-                .andExpect(jsonPath("$.code").value((int) CommonConstants.SUCCESS_CODE))
-                .andExpect(status().isOk())
                 .andReturn();
     }
 }

@@ -73,39 +73,84 @@ public interface CommonConstants {
     byte MONITOR_DOWN_CODE = 0x02;
 
     /**
-     * Alarm status: 0 - normal alarm (to be processed)
+     * Monitor bind type, 0: monitor that auto-created by sd
      */
-    byte ALERT_STATUS_CODE_PENDING = 0x00;
+    byte MONITOR_BIND_TYPE_SD_SUB_MONITOR = 0x00;
 
     /**
-     * Alarm Status: 1 - Threshold triggered but not reached the number of alarms
+     * Monitor bind type, 1: the main monitor of sd
      */
-    byte ALERT_STATUS_CODE_NOT_REACH = 0x01;
+    byte MONITOR_BIND_TYPE_SD_MAIN_MONITOR = 0x01;
 
     /**
-     * Alarm Status: 2-Restore Alarm
+     * label key: instance
      */
-    byte ALERT_STATUS_CODE_RESTORED = 0x02;
+    String LABEL_INSTANCE = "instance";
 
     /**
-     * Alert Status: 3-Handled
+     * label key: alert name
      */
-    byte ALERT_STATUS_CODE_SOLVED = 0x03;
+    String LABEL_ALERT_NAME = "alertname";
 
     /**
-     * Alarm level: 0: high-emergency-emergency-red
+     * label key: host
      */
-    byte ALERT_PRIORITY_CODE_EMERGENCY = 0x00;
+    String LABEL_HOST = "host";
+    
+    /**
+     * Alarm severity label key
+     */
+    String LABEL_ALERT_SEVERITY = "severity";
 
     /**
-     * Alarm severity: 1: medium-critical-critical alarm-orange
+     * Alarm severity fatal level
      */
-    byte ALERT_PRIORITY_CODE_CRITICAL = 0x01;
+    String LABEL_ALERT_FATAL = "fatal";
+    
+    /**
+     * alarm severity emergency level
+     */
+    String ALERT_SEVERITY_EMERGENCY = "emergency";
 
     /**
-     * Warning level: 2: low-warning-warning warning-yellow
+     * alarm severity critical level
      */
-    byte ALERT_PRIORITY_CODE_WARNING = 0x02;
+    String ALERT_SEVERITY_CRITICAL = "critical";
+
+    /**
+     * alarm severity warning level
+     */
+    String ALERT_SEVERITY_WARNING = "warning";
+
+    /**
+     * alarm severity info level
+     */
+    String ALERT_SEVERITY_INFO = "info";
+
+    /**
+     * Alarm status: firing
+     */
+    String ALERT_STATUS_FIRING = "firing";
+
+    /**
+     * Alarm status: resolved
+     */
+    String ALERT_STATUS_RESOLVED = "resolved";
+
+    /**
+     * Alarm status: pending
+     */
+    String ALERT_STATUS_PENDING = "pending";
+
+    /**
+     * alert threshold type: realtime
+     */
+    String ALERT_THRESHOLD_TYPE_REALTIME = "realtime";
+
+    /**
+     * alert threshold type: periodic
+     */
+    String ALERT_THRESHOLD_TYPE_PERIODIC = "periodic";
 
     /**
      * Field parameter type: number
@@ -193,6 +238,11 @@ public interface CommonConstants {
     byte AUTH_TYPE_GITEE = 5;
 
     /**
+     * inner default label key __instance__
+     */
+    String LABEL_INNER_KEY_INSTANCE = "__instance__";
+    
+    /**
      * Inside the tag: monitorId Monitor task ID
      */
     String TAG_MONITOR_ID = "monitorId";
@@ -201,6 +251,16 @@ public interface CommonConstants {
      * Inside the tag: monitorName Task name
      */
     String TAG_MONITOR_NAME = "monitorName";
+
+    /**
+     * Inside the tag: indicate that this monitor is auto-created by main monitor
+     */
+    String TAG_AUTO_CREATED = "autoCreated";
+
+    /**
+     * Inside the tag: indicate that this monitor is a main monitor which provides service discovery
+     */
+    String TAG_SD_MAIN_MONITOR = "sdMainMonitor";
 
     /**
      * Inside the tag: monitorHost Task host
@@ -233,6 +293,19 @@ public interface CommonConstants {
     String TAG_CODE = "code";
 
     /**
+     * Tag Type: Auto-generated
+     */
+    byte TAG_TYPE_AUTO_GENERATE = 0;
+    /**
+     * Tag Type: User-generated
+     */
+    byte TAG_TYPE_USER_GENERATE = 1;
+    /**
+     * Tag Type: System preset
+     */
+    byte TAG_TYPE_SYSTEM_PRESET = 2;
+
+    /**
      * notice_period type Type field, daily type
      */
     int NOTICE_PERIOD_DAILY = 0;
@@ -253,9 +326,19 @@ public interface CommonConstants {
     String CACHE_ALERT_SILENCE = "alert_silence";
 
     /**
+     * cache key alert define
+     */
+    String CACHE_ALERT_DEFINE = "alert_define";
+
+    /**
      * cache key alert converge
      */
-    String CACHE_ALERT_CONVERGE = "alert_converge";
+    String CACHE_ALERT_GROUP_CONVERGE = "alert_group_converge";
+
+    /**
+     * cache key alert inhibit
+     */
+    String CACHE_ALERT_INHIBIT = "alert_inhibit";
 
     /**
      * collector status online 0

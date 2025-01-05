@@ -89,6 +89,7 @@
         <module>hertzbeat-plugin</module>
         <module>hertzbeat-grafana</module>
         <module>hertzbeat-e2e</module>
+        <module>hertzbeat-base</module>
     </modules>
 
     <properties>
@@ -163,16 +164,14 @@
         <huawei.sdk.version>3.1.37</huawei.sdk.version>
         <huawei.obs.version>3.23.5</huawei.obs.version>
         <commons-net>3.8.0</commons-net>
-
         <js.version>23.0.5</js.version>
-
-
         <iotdb-session.version>0.13.3</iotdb-session.version>
         <influxdb.version>2.23</influxdb.version>
         <spring-cloud-starter-openfeign.version>3.0.5</spring-cloud-starter-openfeign.version>
         <taos-jdbcdriver.version>3.0.0</taos-jdbcdriver.version>
-        <greptimedb.version>0.7.3</greptimedb.version>
+        <greptimedb.version>0.9.1</greptimedb.version>
         <mysql-jdbcdriver.version>8.0.33</mysql-jdbcdriver.version>
+        <arrow.version>18.1.0</arrow.version>
     </properties>
 
     <dependencyManagement>
@@ -181,6 +180,12 @@
             <dependency>
                 <groupId>org.apache.hertzbeat</groupId>
                 <artifactId>hertzbeat-common</artifactId>
+                <version>${hertzbeat.version}</version>
+            </dependency>
+            <!-- base -->
+            <dependency>
+                <groupId>org.apache.hertzbeat</groupId>
+                <artifactId>hertzbeat-base</artifactId>
                 <version>${hertzbeat.version}</version>
             </dependency>
             <!-- data warehouse -->
@@ -467,6 +472,17 @@
                 <artifactId>js-scriptengine</artifactId>
                 <version>${js.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.arrow</groupId>
+                <artifactId>arrow-vector</artifactId>
+                <version>${arrow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.arrow</groupId>
+                <artifactId>arrow-memory-netty</artifactId>
+                <version>${arrow.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -501,6 +517,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <argLine>--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED</argLine>
+                </configuration>
             </plugin>
             <!-- java code style check -->
             <plugin>

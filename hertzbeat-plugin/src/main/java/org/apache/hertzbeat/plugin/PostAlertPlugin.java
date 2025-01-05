@@ -17,18 +17,17 @@
 
 package org.apache.hertzbeat.plugin;
 
-import org.apache.hertzbeat.common.entity.alerter.Alert;
+import org.apache.hertzbeat.common.entity.alerter.GroupAlert;
 import org.apache.hertzbeat.common.entity.plugin.PluginContext;
 
 /**
  * Post-alarm plug-in
  */
-public interface PostAlertPlugin extends Plugin<Alert> {
+public interface PostAlertPlugin {
 
     /**
      * Supports user-defined parameters
      */
-    @Override
-    void execute(Alert alert, PluginContext pluginContext);
+    void execute(GroupAlert alert, PluginContext pluginContext);
 
 }

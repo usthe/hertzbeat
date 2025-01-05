@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.common.constants.DataQueueConstants;
-import org.apache.hertzbeat.common.entity.alerter.Alert;
 import org.apache.hertzbeat.common.entity.message.CollectRep;
 import org.apache.hertzbeat.common.queue.CommonDataQueue;
 import org.springframework.beans.factory.DisposableBean;
@@ -43,36 +42,27 @@ import org.springframework.context.annotation.Primary;
 @Slf4j
 @Primary
 public class InMemoryCommonDataQueue implements CommonDataQueue, DisposableBean {
-
-    private final LinkedBlockingQueue<Alert> alertDataQueue;
+    
     private final LinkedBlockingQueue<CollectRep.MetricsData> metricsDataToAlertQueue;
-    private final LinkedBlockingQueue<CollectRep.MetricsData> metricsDataToPersistentStorageQueue;
-    private final LinkedBlockingQueue<CollectRep.MetricsData> metricsDataToRealTimeStorageQueue;
+    private final LinkedBlockingQueue<CollectRep.MetricsData> metricsDataToStorageQueue;
+    private final LinkedBlockingQueue<CollectRep.MetricsData> serviceDiscoveryDataQueue;
 
     public InMemoryCommonDataQueue() {
-        alertDataQueue = new LinkedBlockingQueue<>();
         metricsDataToAlertQueue = new LinkedBlockingQueue<>();
-        metricsDataToPersistentStorageQueue = new LinkedBlockingQueue<>();
-        metricsDataToRealTimeStorageQueue = new LinkedBlockingQueue<>();
+        metricsDataToStorageQueue = new LinkedBlockingQueue<>();
+        serviceDiscoveryDataQueue = new LinkedBlockingQueue<>();
     }
 
     public Map<String, Integer> getQueueSizeMetricsInfo() {
         Map<String, Integer> metrics = new HashMap<>(8);
-        metrics.put("alertDataQueue", alertDataQueue.size());
         metrics.put("metricsDataToAlertQueue", metricsDataToAlertQueue.size());
-        metrics.put("metricsDataToPersistentStorageQueue", metricsDataToPersistentStorageQueue.size());
-        metrics.put("metricsDataToMemoryStorageQueue", metricsDataToRealTimeStorageQueue.size());
+        metrics.put("metricsDataToStorageQueue", metricsDataToStorageQueue.size());
         return metrics;
     }
 
     @Override
-    public void sendAlertsData(Alert alert) {
-        alertDataQueue.offer(alert);
-    }
-
-    @Override
-    public Alert pollAlertsData() throws InterruptedException {
-        return alertDataQueue.take();
+    public CollectRep.MetricsData pollServiceDiscoveryData() throws InterruptedException {
+        return serviceDiscoveryDataQueue.take();
     }
 
     @Override
@@ -81,27 +71,29 @@ public class InMemoryCommonDataQueue implements CommonDataQueue, DisposableBean 
     }
 
     @Override
-    public CollectRep.MetricsData pollMetricsDataToPersistentStorage() throws InterruptedException {
-        return metricsDataToPersistentStorageQueue.take();
-    }
-
-    @Override
-    public CollectRep.MetricsData pollMetricsDataToRealTimeStorage() throws InterruptedException {
-        return metricsDataToRealTimeStorageQueue.take();
+    public CollectRep.MetricsData pollMetricsDataToStorage() throws InterruptedException {
+        return metricsDataToStorageQueue.take();
     }
 
     @Override
     public void sendMetricsData(CollectRep.MetricsData metricsData) {
         metricsDataToAlertQueue.offer(metricsData);
-        metricsDataToPersistentStorageQueue.offer(metricsData);
-        metricsDataToRealTimeStorageQueue.offer(metricsData);
+    }
+
+    @Override
+    public void sendMetricsDataToStorage(CollectRep.MetricsData metricsData) {
+        metricsDataToStorageQueue.offer(metricsData);
+    }
+
+    @Override
+    public void sendServiceDiscoveryData(CollectRep.MetricsData metricsData) {
+        serviceDiscoveryDataQueue.offer(metricsData);
     }
 
     @Override
     public void destroy() {
-        alertDataQueue.clear();
         metricsDataToAlertQueue.clear();
-        metricsDataToPersistentStorageQueue.clear();
-        metricsDataToRealTimeStorageQueue.clear();
+        metricsDataToStorageQueue.clear();
+        serviceDiscoveryDataQueue.clear();
     }
 }

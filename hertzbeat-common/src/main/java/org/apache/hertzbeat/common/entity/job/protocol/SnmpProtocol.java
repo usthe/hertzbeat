@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SnmpProtocol {
+public class SnmpProtocol implements CommonRequestProtocol, Protocol {
     /**
      * IP ADDRESS OR DOMAIN NAME OF THE PEER HOST
      */

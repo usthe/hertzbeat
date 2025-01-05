@@ -26,16 +26,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hertzbeat.common.constants.CommonConstants;
 import org.apache.hertzbeat.common.entity.manager.Monitor;
 import org.apache.hertzbeat.common.entity.manager.Param;
-import org.apache.hertzbeat.common.entity.manager.Tag;
 import org.apache.hertzbeat.manager.pojo.dto.MonitorDto;
 import org.apache.hertzbeat.manager.service.ImExportService;
 import org.apache.hertzbeat.manager.service.MonitorService;
@@ -66,9 +63,6 @@ public abstract class AbstractImExportServiceImpl implements ImExportService {
         if (!CollectionUtils.isEmpty(formList)) {
             formList.forEach(monitorDto -> {
                 monitorService.validate(monitorDto, false);
-                if (monitorDto.isDetected()) {
-                    monitorService.detectMonitor(monitorDto.getMonitor(), monitorDto.getParams(), monitorDto.getCollector());
-                }
                 monitorService.addMonitor(monitorDto.getMonitor(), monitorDto.getParams(), monitorDto.getCollector(), monitorDto.getGrafanaDashboard());
             });
         }
@@ -104,10 +98,6 @@ public abstract class AbstractImExportServiceImpl implements ImExportService {
         var exportMonitor = new ExportMonitorDTO();
         var monitor = new MonitorDTO();
         BeanUtils.copyProperties(dto.getMonitor(), monitor);
-        if (!CollectionUtils.isEmpty(dto.getMonitor().getTags())) {
-            monitor.setTags(dto.getMonitor().getTags().stream()
-                    .map(Tag::getId).toList());
-        }
         exportMonitor.setMonitor(monitor);
         exportMonitor.setParams(dto.getParams().stream()
                 .map(it -> {
@@ -119,7 +109,6 @@ public abstract class AbstractImExportServiceImpl implements ImExportService {
                 })
                 .toList());
         exportMonitor.setMetrics(dto.getMetrics());
-        exportMonitor.setDetected(false);
         exportMonitor.getMonitor().setCollector(dto.getCollector());
         return exportMonitor;
     }
@@ -130,19 +119,11 @@ public abstract class AbstractImExportServiceImpl implements ImExportService {
         }
 
         var monitorDto = new MonitorDto();
-        monitorDto.setDetected(exportMonitor.getDetected());
         var monitor = new Monitor();
         log.debug("exportMonitor.monitor{}", exportMonitor.monitor);
-        if (exportMonitor.monitor != null) { // Add one more null check
+        if (exportMonitor.monitor != null) { 
+            // Add one more null check
             BeanUtils.copyProperties(exportMonitor.monitor, monitor);
-            if (exportMonitor.monitor.tags != null && !exportMonitor.monitor.tags.isEmpty()) {
-                monitor.setTags(tagService.listTag(new HashSet<>(exportMonitor.monitor.tags))
-                        .stream()
-                        .filter(tag -> !(tag.getName().equals(CommonConstants.TAG_MONITOR_ID) || tag.getName().equals(CommonConstants.TAG_MONITOR_NAME)))
-                        .collect(Collectors.toList()));
-            } else {
-                monitor.setTags(Collections.emptyList());
-            }
         }
         monitorDto.setMonitor(monitor);
         if (exportMonitor.getMonitor() != null) {
@@ -180,8 +161,6 @@ public abstract class AbstractImExportServiceImpl implements ImExportService {
         private List<ParamDTO> params;
         @ExcelCollection(name = "Metrics")
         private List<String> metrics;
-        @ExcelCollection(name = "detected")
-        private Boolean detected;
     }
 
     @Data
@@ -201,8 +180,8 @@ public abstract class AbstractImExportServiceImpl implements ImExportService {
         private Byte status;
         @Excel(name = "Description")
         private String description;
-        @Excel(name = "Tags")
-        private List<Long> tags;
+        @Excel(name = "labels")
+        private Map<String, String> labels;
         @Excel(name = "Collector")
         private String collector;
     }

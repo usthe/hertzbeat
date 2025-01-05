@@ -17,15 +17,15 @@
 
 package org.apache.hertzbeat.plugin;
 
-import org.apache.hertzbeat.common.entity.plugin.PluginContext;
+import org.apache.hertzbeat.common.entity.alerter.GroupAlert;
 
 /**
  * Plugin
  */
-public interface Plugin<T> {
+public interface Plugin {
 
     /**
-     * execute
+     * execute when alert
      */
-    void execute(T param, PluginContext pluginContext);
+    void alert(GroupAlert alert);
 }

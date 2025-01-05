@@ -39,8 +39,10 @@
     "alert": {
       "": "告警",
       "center": "告警中心",
+      "group": "分组收斂",
       "setting": "閾值規則",
       "converge": "告警收斂",
+      "inhibit": "告警抑制",
       "silence": "告警靜默",
       "dispatch": "消息通知"
     },
@@ -55,16 +57,16 @@
       "monitor.name": "監控任務名稱",
       "monitor.metrics": "監控指標",
       "help.message.content": "自定義監控看板",
-      "help.content": "自定義監控看板，以表格形式展示某種監控的自選指標",
+      "help.content": "自定義監控看板(beta)，以表格形式展示某種監控的自選指標",
       "help.link": ""
     },
     "advanced": {
       "": "高级",
       "collector": "採集集群",
-      "tags": "標簽管理",
+      "labels": "標簽管理",
       "define": "監控模版",
       "status": "狀態頁面",
-      "plugin": "插件管理"
+      "plugins": "外掛管理"
     },
     "extras": {
       "": "更多",
@@ -73,11 +75,7 @@
       "settings": "系統設置",
       "about": "關於"
     },
-    "more": "更多",
-    "link": {
-      "question": "常見問題",
-      "guild": "使用指南"
-    }
+    "more": "更多"
   },
   "monitor": {
     "": "監控",
@@ -136,7 +134,7 @@
       "enabled.label": "啓用Grafana監控",
       "upload.tip": "上傳Grafana模板文件",
       "upload.label": "上傳Grafana模板"
-    }
+     }
   },
   "alert": {
     "": "告警",
@@ -147,325 +145,12 @@
       "2": "已恢複",
       "3": "已處理"
     },
-    "priority": {
+    "severity": {
       "": "告警級別",
       "all": "全部級別",
       "0": "緊急告警",
       "1": "嚴重告警",
       "2": "警告告警"
-    },
-    "setting": {
-      "new": "新增阈值規則",
-      "edit": "編輯阈值規則",
-      "delete": "刪除阈值規則",
-      "export": "導出規則",
-      "import": "導入規則",
-      "id": "阈值規則ID",
-      "target": {
-        "": "指標對象",
-        "place-holder": "請搜索或選擇指標對象",
-        "tip": "選中的指標對象",
-        "other": "所屬行其它指標對象",
-        "system_value_row_count": "系統-指標值行數量"
-      },
-      "expr": {
-        "": "阈值觸發表達式",
-        "tip": "支持的阈值觸發表達式環境變量與操作符",
-        "label": "根據表達式計算觸發阈值,表達式環境變量和操作符見上方",
-        "example": "根據此表達式計算判斷是否觸發阈值.示例"
-      },
-      "trigger": "異常時觸發告警,變更監控可用性狀態",
-      "rule": {
-        "": "閾值規則",
-        "label": "圖形化選擇設置指標觸發告警規則,支援多規則與",
-        "metric": {
-          "place-holder": "請選擇指標"
-        },
-        "switch-expr": {
-          "0": "閾值模版",
-          "1": "閾值表達式"
-        },
-        "operator": {
-          "": "運算符",
-          "str-equals": "等於",
-          "str-no-equals": "不等於",
-          "str-contains": "包含",
-          "str-no-contains": "不包含",
-          "str-matches": "匹配",
-          "str-no-matches": "不匹配",
-          "exists": "存在值",
-          "no-exists": "不存在值"
-        },
-        "string-value": {
-          "place-holder": "請輸入匹配字符串"
-        },
-        "numeric-value": {
-          "place-holder": "請輸入匹配數值"
-        }
-      },
-      "number": "數值型",
-      "string": "字符型",
-      "time": "時間型",
-      "times": {
-        "": "觸發次數",
-        "tip": "設置觸發阈值多少次之後才會發送告警"
-      },
-      "template": {
-        "": "通知模版",
-        "tip": "支持的通知模版環境變量",
-        "label": "告警觸發後發送的通知信息模版,模版環境變量見上方",
-        "example": "請輸入告警的通知模版.示例: ${app}.${metrics}.${metric}'s value is too high",
-        "monitor-type": "監控類型名稱",
-        "metrics-name": "監控指標集合名稱",
-        "metric-name": "監控指標名稱",
-        "metric-value": "指標值",
-        "other-value": "所屬行其它指標值"
-      },
-      "default": {
-        "": "應用全域",
-        "tip": "此告警阈值配置是否應用于全局所有此類型監控"
-      },
-      "enable": {
-        "": "啓用閾值",
-        "tip": "此告警阈值配置開啓生效或關閉"
-      },
-      "recover-notice": {
-        "": "恢復通知",
-        "tip": "是否在此閾值規則下告警恢復時發送對應的恢復通知"
-      },
-      "connect": {
-        "": "閾值規則關聯監控",
-        "left": "未關聯監控",
-        "right": "已關聯監控"
-      },
-      "priority": {
-        "tip": "觸發阈值的告警級別,從低到高依次爲:警告-warning,嚴重-critical,緊急-emergency"
-      },
-      "operator": "支持操作符函數",
-      "search": "搜尋閾值"
-    },
-    "silence": {
-      "new": "新增靜默策略",
-      "edit": "編輯靜默策略",
-      "delete": "刪除靜默策略",
-      "name": "策略名稱",
-      "match-all": "應用所有",
-      "priority": "匹配級別",
-      "type": {
-        "once": "一次性靜默",
-        "cyc": "週期性靜默",
-        "": "靜默類型"
-      },
-      "tags": "匹配標籤",
-      "time": "靜默時段",
-      "times": "已靜默告警數",
-      "enable": "啟用靜默策略"
-    },
-    "converge": {
-      "new": "新增收斂策略",
-      "edit": "編輯收斂策略",
-      "delete": "刪除收斂策略",
-      "name": "策略名稱",
-      "match-all": "應用所有",
-      "priority": "匹配級別",
-      "tags": "匹配標籤",
-      "repeat": "重複告警判定條件",
-      "repeat-rule": "告警標籤與告警級別相同",
-      "eval-interval": "重複告警收斂週期(秒)",
-      "enable": "啟用收斂策略"
-    },
-    "center": {
-      "delete": "刪除告警",
-      "clear": "一鍵清空",
-      "deal": "標記已處理",
-      "no-deal": "標記未處理",
-      "search": "搜索告警內容",
-      "filter-status": "告警狀態",
-      "filter-priority": "告警級別",
-      "target": "告警對象",
-      "monitor": "所屬監控",
-      "priority": "級別",
-      "content": "告警內容",
-      "tags": "標簽",
-      "status": "狀態",
-      "time": {
-        "": "告警時間",
-        "tip": "此告警期間累計觸發 {{times}} 次告警"
-      },
-      "first-time": "開始",
-      "last-time": "最新",
-      "confirm": {
-        "delete": "請確認是否刪除!",
-        "clear-all": "請確認是否清空所有告警記錄!",
-        "mark-done-batch": "請確認是否批量標記已處理!",
-        "mark-done": "請確認是否標記已處理!",
-        "mark-no-batch": "請確認是否批量標記未處理!",
-        "mark-no": "請確認是否標記未處理!"
-      },
-      "notify": {
-        "no-mark": "未選中任何待標記項!"
-      }
-    },
-    "help": {
-      "notice": {
-        "": "消息通知用于配置告警通知的接收对象以及接收方式，使被阈值觸發的告警信息，通過指定方式通知到接收对象（支持郵箱、釘釘、微信，Webhook等），<a href='https://hertzbeat.apache.org/zh-cn/docs/help/alert_webhook'>點擊查看具體配置步驟</a>。<br>通知模版是不同通知方式對應的消息內容結構模版，默認使用內置模版或者您可以自定義模版來自定義消息通知結構。<br><span class='help_module_span'>注意⚠️：配置“<i>通知媒介後</i>”，您還需要配置“<i>通知策略</i>”來指定哪些消息發給哪些接收对象，</span><a href='https://hertzbeat.apache.org/zh-cn/docs/help/alert_email#%E9%82%AE%E4%BB%B6%E9%80%9A%E7%9F%A5%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98'>點擊查看可能遇見的問題</a>。",
-        "link": "https://hertzbeat.apache.org/zh-cn/docs/help/alert_email"
-      },
-      "converge": {
-        "": "告警收斂支持對指定時間段內的相同重複告警消息進行去重收斂。您可以點擊”<i>新增收斂策略</i>“，並進行配置。<br>當阈值規則觸發告警後，會進入到告警收斂，告警收斂會根據收斂規則對重複告警收斂，以避免大量重複告警消息導致接收風暴。",
-        "link": "https://hertzbeat.apache.org/zh-cn/docs/#%E5%91%8A%E8%AD%A6%E6%94%B6%E6%95%9B"
-      },
-      "center": {
-        "": "告警中心是所有已觸發告警消息的通知處理中心，包括系統內部阈值觸發的告警和第三方外部告警渠道接入的告警信息。<br>通過告警中心我們可以對告警消息進行查詢，標記處理，告警標記未處理，告警刪除清空等批量操作。",
-        "link": "https://hertzbeat.apache.org/zh-cn/docs/#%E5%91%8A%E8%AD%A6%E4%B8%AD%E5%BF%83"
-      },
-      "setting": {
-        "": "阈值規則用于監控指標告警阈值規則管理，點擊“新增阈值”對監控指標進行告警阈值配置，系統將根據配置和采集指標數據計算觸發告警。您也可以根據需要修改已有配置，如需進行阈值關聯監控，請先關閉全局默認。<br>注意⚠️: 配置完畢後，被阈值觸發的告警可以在【告警中心】中查看，您也可以在【消息通知】中設置告警消息的通知方式以及通知人員。",
-        "link": "https://hertzbeat.apache.org/zh-cn/docs/help/alert_threshold"
-      },
-      "silence": {
-        "": "告警靜默管理用于您在系統維護期間或夜晚周末不想受到告警打擾時，可以點擊”<i>新增靜默策略</i>“，設置指定時間段內屏蔽告警通知。<br>告警靜默規則支持壹次性時間段或周期性時間段，支持標簽匹配和告警級別匹配部分告警。",
-        "link": "https://hertzbeat.apache.org/zh-cn/docs/#%E5%91%8A%E8%AD%A6%E9%9D%99%E9%BB%98"
-      }
-    },
-    "notice": {
-      "template": {
-        "": "通知模板",
-        "new": "新增通知模板",
-        "edit": "編輯通知模板",
-        "show": "查看模板",
-        "delete": "刪除通知模板",
-        "name": "模板名稱",
-        "type": "通知方式",
-        "preset": {
-          "": "模版類型",
-          "true": "系統內建模版",
-          "false": "用戶自定義模版"
-        },
-        "content": "模板内容",
-        "placeholder": "選擇模版"
-      },
-      "receiver": {
-        "": "通知媒介",
-        "new": "新增接收对象",
-        "edit": "編輯接收对象",
-        "delete": "刪除接收对象",
-        "people": {
-          "": "接收对象",
-          "placeholder": "選擇接收对象",
-          "name": "接收对象名稱"
-        },
-        "type": {
-          "": "通知方式",
-          "placeholder": "選擇通知方式"
-        },
-        "setting": "配置",
-        "next": "下一步請配置您的[告警通知策略]！"
-      },
-      "type": {
-        "sms": "短信",
-        "phone": "手機號",
-        "email": "郵箱",
-        "userId": "用戶ID",
-        "url": "URL地址",
-        "wechat": "微信公衆號",
-        "wechat-id": "微信OPENID",
-        "WeCom-robot": "企業微信機器人",
-        "WeCom-robot-key": "企業微信機器人KEY",
-        "access-token": "機器人ACCESS_TOKEN",
-        "ding": "釘釘機器人",
-        "fei-shu": "飛書機器人",
-        "fei-shu-key": "飛書機器人KEY",
-        "telegram-bot": "Telegram機器人",
-        "telegram-bot-token": "Telegram Bot Token",
-        "telegram-bot-user-id": "Telegram User Id",
-        "slack": "Slack WebHook",
-        "slack-webHook-url": "Slack WebHook地址",
-        "discord": "Discord機器人",
-        "discord-bot-token": "Discord Bot Token",
-        "discord-channel-id": "Discord頻道ID",
-        "WeComApp": "企業微信應用",
-        "WeComApp-corpId": "企業id",
-        "WeComApp-agentId": "企業應用id",
-        "WeComApp-appSecret": "企業應用secret",
-        "WeComApp-userId": "使用者id（多個使用|符號分隔）",
-        "WeComApp-partyId": "部門id（多個使用|符號分隔）",
-        "WeComApp-tagId": "標簽id（多個使用|符號分隔）",
-        "smn": "華為雲SMN",
-        "smn-ak": "AK",
-        "smn-sk": "SK",
-        "smn-projectId": "項目ID",
-        "smn-region": "地域",
-        "smn-topicUrn": "TopicUrn",
-        "serverchan": "ServerChan",
-        "serverchan-token": "ServerChanToken",
-        "gotify": "Gotify",
-        "gotify-token": "Gotify Token",
-        "telegram": "Telegram"
-      },
-      "rule": {
-        "": "通知策略",
-        "new": "新增通知策略",
-        "edit": "編輯通知策略",
-        "delete": "刪除通知策略",
-        "name": "策略名稱",
-        "all": "轉發所有",
-        "enable": "是否啓用",
-        "tag": {
-          "": "標簽匹配",
-          "placeholder": "選擇標簽"
-        },
-        "priority": {
-          "": "級別匹配",
-          "placeholder": "選擇級別"
-        },
-        "period": {
-          "": "時間週期",
-          "no-limit": "無限制",
-          "custom": "自定義"
-        },
-        "period-chose": "選擇日期",
-        "time": "通知時段",
-        "time-start": "起始時間",
-        "time-end": "結束時間"
-      },
-      "send-test": {
-        "": "發送告警測試",
-        "notify": {
-          "success": "觸發告警測試成功!",
-          "failed": "觸發告警測試失敗!"
-        }
-      },
-      "sender": {
-        "enable": "是否啟用",
-        "mail": {
-          "host": "郵件伺服器地址",
-          "username": "郵件帳號",
-          "password": "郵件密碼",
-          "port": "郵件端口",
-          "ssl": "是否啟用SSL",
-          "starttls": "是否啟用STARTTLS",
-          "enable": "啟用郵件設定"
-        },
-        "sms": {
-          "type": {
-            "": "騰訊類型",
-            "tencent": "騰訊短訊",
-            "alibaba": "阿裏短訊"
-          },
-          "tencent": {
-            "secretId": "騰訊短訊SecretId",
-            "secretKey": "騰訊短訊SecretKey",
-            "signName": "騰訊短訊SignName",
-            "appId": "騰訊短訊AppId",
-            "templateId": "騰訊短訊TemplateId"
-          }
-        }
-      }
-    },
-    "export": {
-      "switch-type": "請選擇導出文件格式!",
-      "use-type": "以 {{type}} 文件格式導出阈值規則"
     }
   },
   "bulletin": {
@@ -478,647 +163,700 @@
     "monitor.type": "監控類型",
     "monitor.name": "監控任務名稱",
     "monitor.metrics": "監控指標",
-    "help.message.content": "自定義監控看板",
-    "help.content": "自定義監控看板，以表格形式展示某種監控的自選指標",
+    "help.content": "自定義監控看板(beta)，以表格形式展示某種監控的自選指標",
     "help.link": "https://hertzbeat.apache.org/docs/help/bulletin"
   },
-  "dashboard": {
-    "alerts": {
-      "title": "最近告警列表",
-      "title-no": "最近未處理告警",
-      "no": "暫無未處理告警",
-      "enter": "進入告警中心",
-      "distribute": "告警分布",
-      "num": "告警數量",
-      "deal": "告警處理",
-      "deal-percent": "告警處理率"
-    },
-    "monitors": {
-      "total": "監控總量",
-      "title": "監控總覽",
-      "sub-title": "監控類型納管數量分布",
-      "formatter": "個監控 占比",
-      "distribute": "納管數量分布"
-    }
-  },
-  "monitor_icon": {
-    "center": "laptop",
-    "service": "appstore",
-    "db": "console-sql",
-    "os": "windows",
-    "mid": "cluster",
-    "cn": "cloud-server",
-    "network": "global",
-    "custom": "project",
-    "program": "code",
-    "cache": "group",
-    "bigdata": "dot-chart",
-    "webserver": "database"
-  },
-  "monitors": {
-    "center": {
-      "help": {
-        "": "監控中心是HertzBeat的監控資源管理入口，以清單的形式展示當前已添加的監控，同時支持標籤分組，査詢過濾，查看監控詳情入口等。<br>您可以對監控進行新增，修改，删除，暫停監控，導入匯出，批量管理等操作。",
-        "link": "https://hertzbeat.apache.org/zh-cn/docs/#%E7%9B%91%E6%8E%A7%E4%B8%AD%E5%BF%83"
-      },
-      "search": {
-        "placeholder": "搜索待添加監控任務的類型: Linux, Redis"
-      }
-    },
-    "list": "監控列表",
-    "spinning-tip": {
-      "detecting": "測試連接可用性"
-    },
-    "new": {
-      "": "新增",
-      "success": "新增監控成功",
-      "failed": "新增監控失敗"
-    },
-    "new-monitor": "新增監控",
-    "edit": {
-      "": "編輯",
-      "success": "修改監控成功",
-      "failed": "修改監控失敗"
-    },
-    "not-found": "查詢異常,此監控不存在",
-    "delete": "刪除",
-    "edit-monitor": "編輯監控",
-    "delete-monitor": "刪除監控",
-    "enable": "恢復監控",
-    "cancel": "暫停監控",
-    "export": {
-      "": "導出監控",
-      "switch-type": "請選擇導出文件格式!",
-      "use-type": "以 {{type}} 文件格式導出監控"
-    },
-    "import": "導入監控",
-    "search": {
-      "placeholder": "搜索監控",
-      "tag": "標籤篩選",
-      "app": "類型篩選"
-    },
-    "total": "總量",
-    "advanced": {
-      "": "高級設置",
-      "tip": "設置高級可選參數"
-    },
-    "detect": {
-      "": "測試連接",
-      "success": "測試連接成功",
-      "failed": "測試連接失敗",
-      "tip": "測試檢查監控的可用性狀態"
-    },
-    "detail": {
-      "": "監控詳情",
-      "auto-refresh": "自動刷新 {{time}} 秒",
-      "config-refresh": "設置 {{time}} 秒自動刷新",
-      "close-refresh": "關閉自動刷新",
-      "show-basic": "顯示監控基本屬性",
-      "name": "名稱",
-      "port": "端口",
-      "description": "描述",
-      "status": "狀態",
-      "basic": "監控任務信息",
-      "realtime": "監控實時數據詳情",
-      "history": "監控曆史圖表詳情",
-      "time-series": {
-        "unavailable": "無法提供曆史圖表數據,請配置時序數據庫"
-      },
-      "chart": {
-        "zoom": "區域縮放",
-        "back": "縮放還原",
-        "save": "保存圖片",
-        "query-1h": "查詢近1小時",
-        "query-6h": "查詢近6小時",
-        "query-1d": "查詢近1天",
-        "query-1w": "查詢近1周",
-        "query-1m": "查詢近1月",
-        "query-3m": "查詢近3月",
-        "no-data": "暫無數據",
-        "unit": "單位"
-      },
-      "value": {
-        "null": "無數據"
-      }
-    },
-    "collect": {
-      "time": {
-        "": "采集時間",
-        "tip": "最近采集時間"
-      }
-    }
-  },
-  "common": {
-    "name": "指標名",
-    "value": "指標值",
-    "search": "搜索",
-    "refresh": "刷新",
-    "notice": "提醒",
-    "ignore": "忽略",
-    "edit-time": "更新時間",
-    "new-time": "創建時間",
-    "edit": "操作",
-    "total": "總量",
-    "yes": "是",
-    "no": "否",
-    "enable": "開啓",
-    "disable": "關閉",
-    "copy": {
-      "": "點擊複製",
-      "button": "複製"
-    },
-    "notify": {
-      "no-select-edit": "未選中任何待編輯項!",
-      "one-select-edit": "只能對一個選中項進行編輯!",
-      "no-select-delete": "未選中任何待刪除項!",
-      "no-select-export": "未選中任何待導出項!",
-      "delete-success": "刪除成功!",
-      "delete-fail": "刪除失敗!",
-      "new-success": "新增成功!",
-      "new-fail": "新增失敗!",
-      "apply-success": "應用成功!",
-      "apply-fail": "應用失敗!",
-      "operate-success": "操作成功!",
-      "operate-fail": "操作失敗!",
-      "monitor-fail": "查詢此監控定義詳情失敗!",
-      "edit-success": "修改成功!",
-      "edit-fail": "修改失敗!",
-      "mark-success": "標記成功!",
-      "mark-fail": "標記失敗!",
-      "no-select-cancel": "未選中任何待取消項!",
-      "cancel-success": "取消監控成功!",
-      "cancel-fail": "取消監控失敗!",
-      "no-select-enable": "未選中任何待啓用監控項!",
-      "enable-success": "啓用監控成功!",
-      "enable-fail": "啓用監控失敗!",
-      "clear-success": "清理成功!",
-      "clear-fail": "清理失敗!",
-      "export-success": "導出成功!",
-      "export-fail": "導出失敗!",
-      "import-success": "導入成功!",
-      "import-fail": "導入失敗!",
-      "copy-success": "複製成功!"
-    },
-    "confirm": {
-      "delete": "請確認是否刪除!",
-      "delete-batch": "請確認是否批量刪除!",
-      "cancel-batch": "請確認是否批量取消監控!",
-      "cancel": "請確認是否取消監控!",
-      "enable-batch": "請確認是否批量啓用監控!",
-      "enable": "請確認是否啓用監控!",
-      "clear-cache": "請確認是否清理緩存!"
-    },
-    "week": {
-      "7": "星期日",
-      "1": "星期一",
-      "2": "星期二",
-      "3": "星期三",
-      "4": "星期四",
-      "5": "星期五",
-      "6": "星期六"
-    },
-    "button": {
-      "ok": "確定",
-      "detect": "測試",
-      "cancel": "取消",
-      "return": "返回",
-      "help": "幫助",
-      "edit": "編輯",
-      "setting": "配置",
-      "delete": "刪除"
-    },
-    "time": {
-      "unit": {
-        "second": "秒"
-      }
-    },
-    "file": {
-      "select": "選擇文件"
-    }
-  },
-  "app": {
-    "theme": {
-      "default": "淺色主題",
-      "dark": "深色主題",
-      "compact": "緊湊主題"
-    },
-    "role": {
-      "admin": "管理員"
-    },
-    "lock": {
-      "": "解除鎖定",
-      "placeholder": "輸入任意解鎖"
-    },
-    "passport": {
-      "desc": "易用友好的開源實時監控系統",
-      "intro-1": "開源、高效能、分散式的",
-      "intro-2": "即時監控"
-    },
-    "login": {
-      "message-need-identifier": "請輸入用戶名",
-      "message-need-credential": "請輸入密碼",
-      "message-invalid-credentials": "賬戶或密碼錯誤",
-      "need-change-password": "請及時更新初始默認密碼!",
-      "tab-login-credentials": "登錄 HertzBeat",
-      "remember-me": "自動登錄",
-      "login": "登錄",
-      "notify": "请先登錄!",
-      "explore": {
-        "cloud": {
-          "": "探索雲端服務",
-          "detail": "點擊探索 HertzBeat 監控雲端服務"
-        }
-      }
-    }
-  },
-  "tag": {
-    "new": "新增標簽",
-    "edit": "編輯標簽",
-    "search": "搜索標簽",
-    "delete": "刪除標簽",
-    "": "標簽",
-    "setting": "管理標簽",
-    "id": "ID",
-    "name": "標簽名",
-    "value": "標簽值",
-    "color": "顔色",
-    "description": "標簽描述",
-    "update-time": "更新時間",
-    "display": "效果",
-    "bind": {
-      "": "綁定標簽",
-      "tip": "您可以使用標簽進行監控資源的分類管理, 例如給資源分別綁定生産環境、測試環境的標簽。"
-    },
-    "help": {
-      "": "標簽在 HertzBeat 中無處不在，我們可以應用標簽在資源分組，規則下的標簽匹配等場景。標簽管理用于對標簽的統壹管理維護，包含新增，刪除，編輯等操作。<br>例如：您可以使用標簽對監控資源進行分類管理，給資源分別綁定生産環境、測試環境的標簽，在告警通知時通過標簽匹配不同的通知人。",
-      "link": "https://hertzbeat.apache.org/zh-cn/docs/"
-    }
-  },
-  "plugin": {
-    "help": {
-      "": "在HertzBeat中，我們可以透過插件機制在警告後執行一些除通知以外的其他操作。插件程式管理用於對插件程式的統一管理，包括上傳和，啟用停用等操作。<br>例如：您可以透過插件機制實現在警告出現後，執行特定的腳本或SQL等操作。",
-      "link": "https://hertzbeat.apache.org/zh-cn/docs/help/plugin"
-    },
-    "upload": "上傳插件",
-    "add": "新增插件",
-    "name": "插件名稱",
-    "type": {
-      "": "插件類型",
-      "POST_ALERT": "告警後",
-      "POST_COLLECT": "採集後",
-      "custom": "自定義插件",
-      "official": "官方插件"
-    },
-    "status": "啟用狀態",
-    "jar": {
-      "file": "Jar包"
-    },
-    "delete": "刪除插件",
-    "search": "搜尋插件",
-    "edit": "編輯插件",
-    "param": {
-      "edit": "編輯參數"
-    }
-  },
-  "define": {
-    "help": {
-      "": "監控模版定義每一個監控類型，類型的參數變量，指標信息，採集協議等。您可根據需求在下拉功能表中選擇已有監控模版進行修改。右下區域為編輯區，左下區域為對照區。<br>您也可以點擊“<i>新增監控類型</i>”來自定義新的的監控類型，現支持<a href='https://hertzbeat.apache.org/zh-cn/docs/advanced/extend-http'> HTTP協議</a>，<a href='https://hertzbeat.apache.org/zh-cn/docs/advanced/extend-jdbc'>JDBC協定</a>，<a href='https://hertzbeat.apache.org/zh-cn/docs/advanced/extend-ssh'>SSH協定</a>，<a href='https://hertzbeat.apache.org/zh-cn/docs/advanced/extend-jmx'> JMX協定</a>，<a href='https://hertzbeat.apache.org/zh-cn/docs/advanced/extend-snmp'> SNMP協定</a>，<a  href='https://hertzbeat.apache.org/zh-cn/docs/template'>點擊查看監控範本</a>。",
-      "link": "https://hertzbeat.apache.org/zh-cn/docs/advanced/extend-point/"
-    },
-    "save-apply": {
-      "": "保存並應用",
-      "no-code": "監控類型定義內容不能為空。",
-      "confirm": "請確認是否保存修改並應用此監控類型定義? 這會影響到您的監控內容。"
-    },
-    "delete": {
-      "": "刪除 {{app}}",
-      "confirm": "請確認是否刪除 {{app}} 監控類型? 刪除後無法添加此類監控。"
-    },
-    "new": {
-      "": "新增監控類型",
-      "code": "# 請在此通過編寫YML內容來定義新的監控類型, 參考文檔: https://hertzbeat.apache.org/docs/advanced/extend-point "
-    },
-    "hide-true": {
-      "tip": "主菜單未顯示此監控類型,是否顯示",
-      "confirm": "確認是否顯示此菜單?"
-    },
-    "hide-false": {
-      "tip": "主菜單已顯示此監控類型,是否隱藏",
-      "confirm": "確認是否隱藏此菜單?"
-    }
-  },
-  "settings": {
-    "server": {
-      "": "消息服務配置",
-      "email": {
-        "": "郵件服務器",
-        "setting": "配置郵件服務器"
-      },
-      "sms": {
-        "": "短信配置",
-        "setting": "配置短信參數"
-      }
-    },
-    "system-config": {
-      "": "系統配置",
-      "locale": {
-        "": "系統語言",
-        "zh_CN": "簡體中文(zh_CN)",
-        "zh_TW": "繁體中文(zh_TW)",
-        "en_US": "英語(en_US)"
-      },
-      "timezone": "系統時區",
-      "theme": {
-        "": "系統主題",
-        "default": "淺色主題",
-        "dark": "深色主題",
-        "compact": "緊湊主題"
-      },
-      "ok": "確認更新"
-    },
-    "object-store": {
-      "": "文件服務配置",
-      "type": {
-        "": "文件服務提供商",
-        "file": "本地文件（默認）",
-        "database": "本地數據庫",
-        "obs": "華為雲OBS"
-      },
-      "obs": {
-        "accessKey": {
-          "": "AccessKey",
-          "placeholder": "華為雲的AccessKeyId"
-        },
-        "secretKey": {
-          "": "SecretKey",
-          "placeholder": "華為雲的AccessKeySecret"
-        },
-        "bucketName": {
-          "": "Bucket",
-          "placeholder": "華為雲OBS中您創建的Bucket名稱"
-        },
-        "endpoint": {
-          "": "EndPoint",
-          "placeholder": "華為雲OBS地域域名，不包括Bucket名"
-        },
-        "savePath": {
-          "": "保存路徑",
-          "placeholder": "備份文件保存路徑, 默認是hertzbeat"
-        }
-      }
-    }
-  },
-  "collector": {
-    "": "採集器",
-    "name": {
-      "": "採集器名称",
-      "placeholder": "請配置待部署的採集器名稱，注意需保證唯一性"
-    },
-    "status": "運行狀態",
-    "task": "总任務數量",
-    "mode": {
-      "": "運行模式",
-      "public": "公共集群模式",
-      "private": "私有云邊模式"
-    },
-    "start-time": "啟動時間",
-    "ip": "IP地址",
-    "version": "版本",
-    "node": "節點名稱",
-    "pinned": "固定任務",
-    "dispatched": "調度任務",
-    "delete": "刪除採集器",
-    "deploy": {
-      "": "部署採集器",
-      "identity": {
-        "": "採集器令牌(IDENTITY)",
-        "tip": "請注意此令牌對應採集器的唯一性，請妥善保存。"
-      },
-      "ok": "生成令牌和部署命令",
-      "close": "關閉頁面-我已保存令牌",
-      "docker": {
-        "": "通過 Docker 方式部署",
-        "help": {
-          "": "# 在Docker環境下執行如下命令",
-          "1": "# docker run -d : 通過Docker啟動一個在後台運行的容器",
-          "2": "# -e IDENTITY=xxx : 設置採集器的標識令牌",
-          "3": "# -e MANAGER_HOST=127.0.0.1 : 設置連接的主HertzBeat服務地址",
-          "4": "# -e MODE=public : 設定運作模式(public or private), 公有叢集模式或私有雲邊模式",
-          "5": "# --name hertzbeat-collector : 命名容器名稱 hertzbeat-collector",
-          "6": "# apache/hertzbeat-collector : 官方應用鏡像源,超时可替换为 quay.io/tancloud/hertzbeat-collector"
-        }
-      },
-      "package": {
-        "": "通過 安裝包 方式部署",
-        "github": "下載安裝包-Github",
-        "gitee": "下載安裝包-Gitee",
-        "help": {
-          "": "# 下載系統環境對應安裝包 hertzbeat-collector-xx.tar.gz",
-          "1": "# 解壓並配置文件 hertzbeat-collector/config/application.yml",
-          "2": "# 替換文件中的 IDENTITY MANAGER_HOST MODE 參數, 如下。",
-          "3": "# 啟動腳本 bin/startup.sh 或者 startup.bat(windows) 來啟動採集器進程。"
-        }
-      }
-    },
-    "online": "上線採集器",
-    "offline": "下線採集器",
-    "confirm": {
-      "online": "請確認是否上線此採集器!",
-      "offline": "請確認是否下線此採集器!",
-      "online-batch": "請確認是否批量上線採集器!",
-      "offline-batch": "請確認是否批量下線採集器!"
-    },
-    "notify": {
-      "no-select-online": "未選中任何待上線項!",
-      "no-select-offline": "未選中任何待下線項!"
-    },
-    "help": {
-      "": "采集集群用于已注冊的監控采集器集群節點管理，展示當前采集器集群狀態和調度任務分布，支持對采集器的部署，刪除，上線，下線等批量操作。<br>除了使用內置采集器外，您可以注冊多個采集器應用于<strong>高性能集群</strong>或<strong>雲邊協同</strong>場景。",
-      "link": "https://hertzbeat.apache.org/docs/help/guide"
-    }
-  },
-  "about": {
-    "title": "Apache HertzBeat (incubating) 是一個開源實時監控系統，無需Agent，性能集羣，兼容Prometheus，自定義監控和狀態頁構建能力。",
-    "point": {
-      "1": "一站式監控告警通知，支持應用服務，數據庫，操作系統，中間件，雲原生，網絡等。",
-      "2": "易用友好，無需 Agent，全頁面操作，鼠標點一點就能監控告警。",
-      "3": "強大監控模版能力，自定義監控任何您想要的指標。",
-      "4": "高性能，採集器集群橫向擴展，支持多隔離網絡監控，雲邊協同。",
-      "5": "自由的閾值規則，郵件釘釘微信飛書短信等消息及時送達。",
-      "6": "提供強大的狀態頁構建功能，輕鬆向用戶傳達您產品服務的實時狀態。"
-    },
-    "help": "HertzBeat 的強大自定義，多類型支持，高性能，易擴展，希望能幫助用戶快速構建自有監控系統。",
-    "github": "Github",
-    "gitee": "Gitee",
-    "issue": "反饋問題",
-    "pr": "貢獻代碼",
-    "discuss": "討論交流",
-    "doc": "文檔中心",
-    "upgrade": "升級指引",
-    "star": "點贊支持"
-  },
-  "status": {
-    "page": "狀態頁面",
-    "org": {
-      "name": {
-        "": "組織名稱",
-        "tip": "狀態頁面展示的組織團隊名稱,如 TanCloud"
-      },
-      "desc": {
-        "": "組織介紹",
-        "tip": "狀態頁面展示的組織信息介紹"
-      },
-      "logo": {
-        "": "標誌圖片",
-        "tip": "請配置組織Logo圖片URL地址,建議SVG格式"
-      },
-      "home": {
-        "": "網站鏈接",
-        "tip": "請配置組織的網站主頁地址"
-      },
-      "feedback": {
-        "": "反饋地址",
-        "tip": "請配置用戶報告反饋問題的地址"
-      },
-      "color": {
-        "": "主題顏色",
-        "tip": "請配置狀態頁面主題背景顏色"
-      },
-      "state": "組織狀態"
-    },
-    "public": {
-      "feedback": "問題反饋",
-      "org": {
-        "state": {
-          "0": "所有系統正常運行",
-          "1": "部分系統運行異常",
-          "2": "所有系統運行異常"
-        }
-      },
-      "today": "今天",
-      "30-day": "30天前",
-      "power-by": "由 Apache HertzBeat 提供構建. Star Us !",
-      "to-incident": "事件信息",
-      "to-component": "狀態頁面"
-    },
-    "incident": {
-      "": "維護事件",
-      "name": {
-        "": "事件名稱",
-        "tip": "請簡短說明當前事件標題"
-      },
-      "history": "事件歷史",
-      "state": {
-        "": "過程狀態",
-        "0": "調查中",
-        "1": "已確認",
-        "2": "觀察中",
-        "3": "已修復"
-      },
-      "message": {
-        "": "發佈消息",
-        "tip": {
-          "0": "我們正在調查此事件問題，請稍後再查看更新。",
-          "1": "我們已確認故障發生的原因，正在處理中。",
-          "2": "我們正在監控該事件，觀察處理效果",
-          "3": "該事件已被修復，謝謝理解支持。"
-        }
-      },
-      "message-latest": "最新消息",
-      "component": "影響組件",
-      "new": "發佈事件",
-      "update": "更新事件",
-      "delete": "刪除事件",
-      "public": {
-        "start-at": "開始於",
-        "update-at": "更新於",
-        "process-time": "過程時間"
-      }
-    },
-    "component": {
-      "": "服務組件",
-      "name": {
-        "": "服務組件",
-        "tip": "配置狀態頁展示的組件服務名稱,如網關Gateway"
-      },
-      "desc": {
-        "": "組件描述",
-        "tip": "配置組件服務的描述信息"
-      },
-      "state": {
-        "": "組件狀態",
-        "0": "正常",
-        "1": "異常",
-        "2": "未知"
-      },
-      "new": "新增組件",
-      "edit": "編輯組件",
-      "delete": "刪除組件",
-      "tag": {
-        "": "匹配標籤",
-        "tip": "狀態計算關聯標籤，使用標籤關聯的所有監控可用性狀態作爲數據來計算此組件服務狀態。"
-      },
-      "method": {
-        "": "狀態統計方式",
-        "tip": "計算組件服務狀態的方式，根據標籤關聯監控可用性自動計算，或者手動配置狀態。",
-        "0": "自動計算",
-        "1": "手動設置"
-      },
-      "config-state": {
-        "": "配置狀態",
-        "tip": "當狀態統計方式爲手動時，配置的組件服務狀態。"
-      },
-      "notify": {
-        "need-org": "請先配置您的組織信息！"
-      }
-    },
-    "help": {
-      "": "基於 HertzBeat 快速構建強大的狀態頁，輕鬆向用戶傳達您產品服務的實時狀態。例如 Github 提供的服務狀態頁 <a href='https://www.githubstatus.com'>https://www.githubstatus.com</a>。<br>支持狀態頁組件狀態和監控狀態聯動同步，故障事件維護管理機制等。提高您的透明度，專業度和用戶信任，降低溝通成本。",
-      "link": "https://hertzbeat.apache.org/zh-cn/docs/help/status"
-    }
-  },
-  "validation": {
-    "email": {
-      "required": "請輸入郵箱地址！",
-      "wrong-format": "郵箱地址格式錯誤！",
-      "invalid": "無效的郵箱地址！"
-    },
-    "phone": {
-      "invalid": "無效的手機號！"
-    },
-    "verification-code": {
-      "invalid": "無效的驗證碼,應是6位數字！",
-      "required": "請輸入驗證碼！"
-    },
-    "password": {
-      "required": "請輸入密碼！",
-      "twice": "兩次輸入的密碼不匹配!",
-      "strength": {
-        "msg": "請至少輸入 6 個字符。請不要使用容易被猜到的密碼。",
-        "strong": "強度:強",
-        "medium": "強度:中",
-        "short": "強度:太短"
-      }
-    },
-    "confirm-password": {
-      "required": "請確認密碼！"
-    },
-    "phone-number": {
-      "required": "請輸入手機號！",
-      "wrong-format": "手機號格式錯誤！"
-    },
-    "title": {
-      "required": "請輸入標題"
-    },
-    "date": {
-      "required": "請選擇起止日期"
-    },
-    "goal": {
-      "required": "請輸入目標描述"
-    },
-    "standard": {
-      "required": "請輸入衡量標准"
-    },
-    "required": "請填充必填項! "
-  }
+  "alert.setting.new": "新增阈值規則",
+  "alert.setting.edit": "編輯阈值規則",
+  "alert.setting.delete": "刪除阈值規則",
+  "alert.setting.export": "導出規則",
+  "alert.setting.import": "導入規則",
+  "alert.setting.name": "阈值名称",
+  "alert.setting.type": "阈值类型",
+  "alert.setting.type.realtime": "实时计算",
+  "alert.setting.type.periodic": "计划周期",
+  "alert.setting.promql.tip": "PromQL查询语句: sum(rate(process_cpu_seconds_total[5m])) > 0.8",
+  "alert.setting.preview.expr": "表达式预览",
+  "alert.setting.target": "指標类型",
+  "alert.setting.target.place-holder": "請搜索或選擇指標對象",
+  "alert.setting.expr": "阈值表達式",
+  "alert.setting.trigger": "異常時觸發告警",
+  "alert.setting.rule": "閾值規則",
+  "alert.setting.number": "數值型",
+  "alert.setting.string": "字符型",
+  "alert.setting.time": "時間型",
+  "alert.setting.rule.label": "圖形化選擇設置指標觸發告警規則,支援多規則與",
+  "alert.setting.rule.metric.place-holder": "請選擇指標",
+  "alert.setting.rule.switch-expr.0": "閾值模版",
+  "alert.setting.rule.switch-expr.1": "閾值表達式",
+  "alert.setting.rule.operator": "運算符",
+  "alert.setting.rule.operator.str-equals": "等於",
+  "alert.setting.rule.operator.str-no-equals": "不等於",
+  "alert.setting.rule.operator.str-contains": "包含",
+  "alert.setting.rule.operator.str-no-contains": "不包含",
+  "alert.setting.rule.operator.str-matches": "匹配",
+  "alert.setting.rule.operator.str-no-matches": "不匹配",
+  "alert.setting.rule.operator.exists": "存在值",
+  "alert.setting.rule.operator.no-exists": "不存在值",
+  "alert.setting.rule.string-value.place-holder": "請輸入匹配字符串",
+  "alert.setting.rule.numeric-value.place-holder": "請輸入匹配數值",
+  "alert.setting.times": "觸發次數",
+  "alert.setting.times.tip": "設置觸發阈值多少次之後才會發送告警",
+  "alert.setting.template": "告警内容",
+  "alert.setting.template.tip": "支持的通知模版環境變量",
+  "alert.setting.template.label": "告警觸發後發送的通知信息模版,模版環境變量見上方",
+  "alert.setting.template.example": "請輸入告警的通知模版.示例: ${app}.${metrics}.${metric}'s value is too high",
+  "alert.setting.template.monitor-type": "監控類型名稱",
+  "alert.setting.template.metrics-name": "監控指標集合名稱",
+  "alert.setting.template.metric-name": "監控指標名稱",
+  "alert.setting.template.metric-value": "指標值",
+  "alert.setting.template.other-value": "所屬行其它指標值",
+  "alert.setting.default": "應用全域",
+  "alert.setting.default.tip": "此告警阈值配置是否應用于全局所有此類型監控",
+  "alert.setting.enable": "啓用閾值",
+  "alert.setting.enable.tip": "此告警阈值配置開啓生效或關閉",
+  "alert.setting.recover-notice": "恢復通知",
+  "alert.setting.recover-notice.tip": "是否在此閾值規則下告警恢復時發送對應的恢復通知",
+  "alert.setting.connect": "閾值規則關聯監控",
+  "alert.setting.connect.left": "未關聯監控",
+  "alert.setting.connect.right": "已關聯監控",
+  "alert.setting.expr.tip": "支持的阈值觸發表達式環境變量與操作符",
+  "alert.setting.expr.label": "根據表達式計算觸發阈值,表達式環境變量和操作符見上方",
+  "alert.setting.expr.example": "根據此表達式計算判斷是否觸發阈值.示例",
+  "alert.setting.priority.tip": "觸發阈值的告警級別,從低到高依次爲:警告-warning,嚴重-critical,緊急-emergency",
+  "alert.setting.target.tip": "選中的指標對象",
+  "alert.setting.target.other": "所屬行其它指標對象",
+  "alert.setting.target.system_value_row_count": "指標值行數量",
+  "alert.setting.operator": "支持操作符函數",
+  "alert.setting.search": "搜尋閾值",
+  "alert.silence.new": "新增靜默策略",
+  "alert.silence.edit": "編輯靜默策略",
+  "alert.silence.delete": "刪除靜默策略",
+  "alert.silence.name": "策略名稱",
+  "alert.silence.match-all": "應用所有",
+  "alert.silence.priority": "匹配級別",
+  "alert.silence.type.once": "一次性靜默",
+  "alert.silence.type.cyc": "週期性靜默",
+  "alert.silence.type": "靜默類型",
+  "alert.silence.labels": "匹配標籤",
+  "alert.silence.time": "靜默時段",
+  "alert.silence.times": "已靜默告警數",
+  "alert.silence.enable": "啟用靜默策略",
+  "alert.group-converge.new": "新增收斂策略",
+  "alert.group-converge.edit": "編輯收斂策略",
+  "alert.group-converge.delete": "刪除收斂策略",
+  "alert.group-converge.name": "策略名稱",
+  "alert.group-converge.match-all": "應用所有",
+  "alert.group-converge.priority": "匹配級別",
+  "alert.group-converge.tags": "匹配標籤",
+  "alert.group-converge.repeat": "重複告警判定條件",
+  "alert.group-converge.repeat-rule": "告警標籤與告警級別相同",
+  "alert.group-converge.eval-interval": "重複告警收斂週期(秒)",
+  "alert.group-converge.enable": "啟用收斂策略",
+  "alert.center.delete": "刪除告警",
+  "alert.center.clear": "一鍵清空",
+  "alert.center.deal": "標記已處理",
+  "alert.center.no-deal": "標記未處理",
+  "alert.center.search": "搜索告警內容",
+  "alert.center.filter-status": "告警狀態",
+  "alert.center.filter-priority": "告警級別",
+  "alert.center.target": "告警對象",
+  "alert.center.monitor": "所屬監控",
+  "alert.center.priority": "級別",
+  "alert.center.content": "告警內容",
+  "alert.center.labels": "標簽",
+  "alert.center.status": "狀態",
+  "alert.center.time": "告警時間",
+  "alert.center.time.tip": "此告警期間累計觸發 {{times}} 次告警",
+  "alert.center.first-time": "開始",
+  "alert.center.last-time": "最新",
+  "alert.center.confirm.delete": "請確認是否刪除!",
+  "alert.center.confirm.clear-all": "請確認是否清空所有告警記錄!",
+  "alert.center.notify.no-mark": "未選中任何待標記項!",
+  "alert.center.confirm.mark-done-batch": "請確認是否批量標記已處理!",
+  "alert.center.confirm.mark-done": "請確認是否標記已處理!",
+  "alert.center.confirm.mark-no-batch": "請確認是否批量標記未處理!",
+  "alert.center.confirm.mark-no": "請確認是否標記未處理!",
+  "alert.help.notice": "消息通知用于配置告警通知的接收对象以及接收方式，使被阈值觸發的告警信息，通過指定方式通知到接收对象（支持郵箱、釘釘、微信，Webhook等），<a href='https://hertzbeat.apache.org/zh-cn/docs/help/alert_webhook'>點擊查看具體配置步驟</a>。<br>通知模版是不同通知方式對應的消息內容結構模版，默認使用內置模版或者您可以自定義模版來自定義消息通知結構。<br><span class='help_module_span'>注意⚠\uFE0F：配置“<i>通知媒介後</i>”，您還需要配置“<i>通知策略</i>”來指定哪些消息發給哪些接收对象，</span><a href='https://hertzbeat.apache.org/zh-cn/docs/help/alert_email#%E9%82%AE%E4%BB%B6%E9%80%9A%E7%9F%A5%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98'>點擊查看可能遇見的問題</a>。",
+  "alert.help.notice.link": "https://hertzbeat.apache.org/zh-cn/docs/help/alert_email",
+  "alert.help.converge": "告警收斂支持對指定時間段內的相同重複告警消息進行去重收斂。您可以點擊”<i>新增收斂策略</i>“，並進行配置。<br>當阈值規則觸發告警後，會進入到告警收斂，告警收斂會根據收斂規則對重複告警收斂，以避免大量重複告警消息導致接收風暴。",
+  "alert.help.converge.link": "https://hertzbeat.apache.org/zh-cn/docs/#%E5%91%8A%E8%AD%A6%E6%94%B6%E6%95%9B",
+  "alert.help.center": "告警中心是所有已觸發告警消息的通知處理中心，包括系統內部阈值觸發的告警和第三方外部告警渠道接入的告警信息。<br>通過告警中心我們可以對告警消息進行查詢，標記處理，告警標記未處理，告警刪除清空等批量操作。",
+  "alert.help.center.link": "https://hertzbeat.apache.org/zh-cn/docs/#%E5%91%8A%E8%AD%A6%E4%B8%AD%E5%BF%83",
+  "alert.help.setting": "阈值規則用于監控指標告警阈值規則管理，點擊“新增阈值”對監控指標進行告警阈值配置，系統將根據配置和采集指標數據計算觸發告警。您也可以根據需要修改已有配置，如需進行阈值關聯監控，請先關閉全局默認。<br>注意⚠\uFE0F: 配置完畢後，被阈值觸發的告警可以在【告警中心】中查看，您也可以在【消息通知】中設置告警消息的通知方式以及通知人員。",
+  "alert.help.setting.link": "https://hertzbeat.apache.org/zh-cn/docs/help/alert_threshold",
+  "alert.help.silence": "告警靜默管理用于您在系統維護期間或夜晚周末不想受到告警打擾時，可以點擊”<i>新增靜默策略</i>“，設置指定時間段內屏蔽告警通知。<br>告警靜默規則支持壹次性時間段或周期性時間段，支持標簽匹配和告警級別匹配部分告警。",
+  "alert.help.silence.link": "https://hertzbeat.apache.org/zh-cn/docs/#%E5%91%8A%E8%AD%A6%E9%9D%99%E9%BB%98",
+  "alert.notice.template": "通知模板",
+  "alert.notice.template.new": "新增通知模板",
+  "alert.notice.template.edit": "編輯通知模板",
+  "alert.notice.template.show": "查看模板",
+  "alert.notice.template.delete": "刪除通知模板",
+  "alert.notice.template.name": "模板名稱",
+  "alert.notice.template.type": "通知方式",
+  "alert.notice.template.preset": "模版類型",
+  "alert.notice.template.preset.true": "系統內建模版",
+  "alert.notice.template.preset.false": "用戶自定義模版",
+  "alert.notice.template.content": "模板内容",
+  "alert.notice.template.placeholder": "選擇模版",
+  "alert.notice.receiver": "通知媒介",
+  "alert.notice.receiver.new": "新增接收对象",
+  "alert.notice.receiver.edit": "編輯接收对象",
+  "alert.notice.receiver.delete": "刪除接收对象",
+  "alert.notice.receiver.people": "接收对象",
+  "alert.notice.receiver.people.placeholder": "選擇接收对象",
+  "alert.notice.receiver.people.name": "接收对象名稱",
+  "alert.notice.receiver.type": "通知方式",
+  "alert.notice.receiver.type.placeholder": "選擇通知方式",
+  "alert.notice.receiver.setting": "配置",
+  "alert.notice.receiver.next": "下一步請配置您的[告警通知策略]！",
+  "alert.notice.type.sms": "短信",
+  "alert.notice.type.phone": "手機號",
+  "alert.notice.type.email": "郵箱",
+  "alert.notice.type.userId": "用戶ID",
+  "alert.notice.type.url": "URL地址",
+  "alert.notice.type.wechat": "微信公衆號",
+  "alert.notice.type.wechat-id": "微信OPENID",
+  "alert.notice.type.WeCom-robot": "企業微信機器人",
+  "alert.notice.type.WeCom-robot-key": "企業微信機器人KEY",
+  "alert.notice.type.access-token": "機器人ACCESS_TOKEN",
+  "alert.notice.type.ding": "釘釘機器人",
+  "alert.notice.type.fei-shu": "飛書機器人",
+  "alert.notice.type.fei-shu-key": "飛書機器人KEY",
+  "alert.notice.type.telegram-bot": "Telegram機器人",
+  "alert.notice.type.telegram-bot-token": "Telegram Bot Token",
+  "alert.notice.type.telegram-bot-user-id": "Telegram User Id",
+  "alert.notice.type.slack": "Slack WebHook",
+  "alert.notice.type.slack-webHook-url": "Slack WebHook地址",
+  "alert.notice.type.discord": "Discord機器人",
+  "alert.notice.type.discord-bot-token": "Discord Bot Token",
+  "alert.notice.type.discord-channel-id": "Discord頻道ID",
+  "alert.notice.type.WeComApp": "企業微信應用",
+  "alert.notice.type.WeComApp-corpId": "企業id",
+  "alert.notice.type.WeComApp-agentId": "企業應用id",
+  "alert.notice.type.WeComApp-appSecret": "企業應用secret",
+  "alert.notice.type.WeComApp-userId": "使用者id（多個使用|符號分隔）",
+  "alert.notice.type.WeComApp-partyId": "部門id（多個使用|符號分隔）",
+  "alert.notice.type.WeComApp-tagId": "標簽id（多個使用|符號分隔）",
+  "alert.notice.type.smn": "華為雲SMN",
+  "alert.notice.type.smn-ak": "AK",
+  "alert.notice.type.smn-sk": "SK",
+  "alert.notice.type.smn-projectId": "項目ID",
+  "alert.notice.type.smn-region": "地域",
+  "alert.notice.type.smn-topicUrn": "TopicUrn",
+  "alert.notice.type.serverchan": "ServerChan",
+  "alert.notice.type.serverchan-token": "ServerChanToken",
+  "alert.notice.type.gotify": "Gotify",
+  "alert.notice.type.gotify-token": "Gotify Token",
+  "alert.notice.type.telegram": "Telegram",
+  "alert.notice.rule": "通知策略",
+  "alert.notice.rule.new": "新增通知策略",
+  "alert.notice.rule.edit": "編輯通知策略",
+  "alert.notice.rule.delete": "刪除通知策略",
+  "alert.notice.rule.name": "策略名稱",
+  "alert.notice.rule.all": "轉發所有",
+  "alert.notice.rule.enable": "是否啓用",
+  "alert.notice.rule.tag": "標簽匹配",
+  "alert.notice.rule.tag.placeholder": "選擇標簽",
+  "alert.notice.rule.priority": "級別匹配",
+  "alert.notice.rule.priority.placeholder": "選擇級別",
+  "alert.notice.rule.period": "時間週期",
+  "alert.notice.rule.period-chose": "選擇日期",
+  "alert.notice.rule.period.no-limit": "無限制",
+  "alert.notice.rule.period.custom": "自定義",
+  "alert.notice.rule.time": "通知時段",
+  "alert.notice.rule.time-start": "起始時間",
+  "alert.notice.rule.time-end": "結束時間",
+  "alert.notice.send-test": "發送告警測試",
+  "alert.notice.send-test.notify.success": "觸發告警測試成功!",
+  "alert.notice.send-test.notify.failed": "觸發告警測試失敗!",
+  "alert.notice.sender.enable": "是否啟用",
+  "alert.notice.sender.mail.host": "郵件伺服器地址",
+  "alert.notice.sender.mail.username": "郵件帳號",
+  "alert.notice.sender.mail.password": "郵件密碼",
+  "alert.notice.sender.mail.port": "郵件端口",
+  "alert.notice.sender.mail.ssl": "是否啟用SSL",
+  "alert.notice.sender.mail.starttls": "是否啟用STARTTLS",
+  "alert.notice.sender.mail.enable": "啟用郵件設定",
+  "alert.notice.sender.sms.type": "騰訊類型",
+  "alert.notice.sender.sms.type.tencent": "騰訊短訊",
+  "alert.notice.sender.sms.type.alibaba": "阿裏短訊",
+  "alert.notice.sender.sms.tencent.secretId": "騰訊短訊SecretId",
+  "alert.notice.sender.sms.tencent.secretKey": "騰訊短訊SecretKey",
+  "alert.notice.sender.sms.tencent.signName": "騰訊短訊SignName",
+  "alert.notice.sender.sms.tencent.appId": "騰訊短訊AppId",
+  "alert.notice.sender.sms.tencent.templateId": "騰訊短訊TemplateId",
+  "alert.export.switch-type": "請選擇導出文件格式!",
+  "alert.export.use-type": "以 {{type}} 文件格式導出阈值規則",
+  "dashboard.alerts.title": "最近告警列表",
+  "dashboard.alerts.title-no": "最近未處理告警",
+  "dashboard.alerts.no": "暫無未處理告警",
+  "dashboard.alerts.enter": "進入告警中心",
+  "dashboard.alerts.distribute": "告警分布",
+  "dashboard.alerts.num": "告警數量",
+  "dashboard.alerts.deal": "告警處理",
+  "dashboard.alerts.deal-percent": "告警處理率",
+  "dashboard.monitors.total": "監控總量",
+  "dashboard.monitors.title": "監控總覽",
+  "dashboard.monitors.sub-title": "監控類型納管數量分布",
+  "dashboard.monitors.formatter": "個監控 占比",
+  "dashboard.monitors.distribute": "納管數量分布",
+  "menu.link.question": "常見問題",
+  "menu.link.guild": "使用指南",
+  "monitor_icon.center": "laptop",
+  "monitor_icon.service": "appstore",
+  "monitor_icon.db": "console-sql",
+  "monitor_icon.os": "windows",
+  "monitor_icon.mid": "cluster",
+  "monitor_icon.cn": "cloud-server",
+  "monitor_icon.network": "global",
+  "monitor_icon.custom": "project",
+  "monitor_icon.program": "code",
+  "monitor_icon.cache": "group",
+  "monitor_icon.bigdata": "dot-chart",
+  "monitor_icon.webserver": "database",
+  "monitors.center.help": "監控中心是HertzBeat的監控資源管理入口，以清單的形式展示當前已添加的監控，同時支持標籤分組，査詢過濾，查看監控詳情入口等。<br>您可以對監控進行新增，修改，删除，暫停監控，導入匯出，批量管理等操作。",
+  "monitors.center.help.link": "https://hertzbeat.apache.org/zh-cn/docs/#%E7%9B%91%E6%8E%A7%E4%B8%AD%E5%BF%83",
+  "monitors.center.search.placeholder": "搜索待添加監控任務的類型: Linux, Redis",
+  "monitors.list": "監控列表",
+  "monitors.spinning-tip.detecting": "測試連接可用性",
+  "monitors.new": "新增",
+  "monitors.new-monitor": "新增監控",
+  "monitors.new.success": "新增監控成功",
+  "monitors.new.failed": "新增監控失敗",
+  "monitors.new.notify.change-to-https": "已啟用 HTTPS，連接埠號已自動更改為 443，請注意。",
+  "monitors.new.notify.change-to-http": "已停用 HTTPS，連接埠號已自動更改為 80，請注意。",
+  "monitors.edit": "編輯",
+  "monitors.edit.success": "修改監控成功",
+  "monitors.edit.failed": "修改監控失敗",
+  "monitors.not-found": "查詢異常,此監控不存在",
+  "monitors.delete": "刪除",
+  "monitors.edit-monitor": "編輯監控",
+  "monitors.delete-monitor": "刪除監控",
+  "monitors.enable": "恢復監控",
+  "monitors.cancel": "暫停監控",
+  "monitors.export": "導出監控",
+  "monitors.export.switch-type": "請選擇導出文件格式!",
+  "monitors.export.use-type": "以 {{type}} 文件格式導出監控",
+  "monitors.import": "導入監控",
+  "monitors.search.placeholder": "搜索監控",
+  "monitors.search.tag": "標籤篩選",
+  "monitors.search.app": "類型篩選",
+  "monitors.total": "總量",
+  "monitors.advanced": "高級設置",
+  "monitors.advanced.tip": "設置高級可選參數",
+  "monitors.detect": "測試連接",
+  "monitors.detect.success": "測試連接成功",
+  "monitors.detect.failed": "測試連接失敗",
+  "monitors.detect.tip": "測試檢查監控的可用性狀態",
+  "monitors.detail": "監控詳情",
+  "monitors.detail.auto-refresh": "自動刷新 {{time}} 秒",
+  "monitors.detail.config-refresh": "設置 {{time}} 秒自動刷新",
+  "monitors.detail.close-refresh": "關閉自動刷新",
+  "monitors.detail.show-basic": "顯示監控基本屬性",
+  "monitors.detail.name": "名稱",
+  "monitors.detail.port": "端口",
+  "monitors.detail.description": "描述",
+  "monitors.detail.status": "狀態",
+  "monitors.detail.basic": "監控任務信息",
+  "monitors.detail.realtime": "監控實時數據詳情",
+  "monitors.detail.history": "監控曆史圖表詳情",
+  "monitors.collect.time": "采集時間",
+  "monitors.collect.time.tip": "最近采集時間",
+  "monitors.detail.time-series.unavailable": "無法提供曆史圖表數據,請配置時序數據庫",
+  "monitors.detail.chart.zoom": "區域縮放",
+  "monitors.detail.chart.back": "縮放還原",
+  "monitors.detail.chart.save": "保存圖片",
+  "monitors.detail.chart.query-1h": "查詢近1小時",
+  "monitors.detail.chart.query-6h": "查詢近6小時",
+  "monitors.detail.chart.query-1d": "查詢近1天",
+  "monitors.detail.chart.query-1w": "查詢近1周",
+  "monitors.detail.chart.query-1m": "查詢近1月",
+  "monitors.detail.chart.query-3m": "查詢近3月",
+  "monitors.detail.chart.no-data": "暫無數據",
+  "monitors.detail.chart.unit": "單位",
+  "monitors.detail.value.null": "無數據",
+  "common.name": "指標名",
+  "common.value": "指標值",
+  "common.search": "搜索",
+  "common.refresh": "刷新",
+  "common.notice": "提醒",
+  "common.ignore": "忽略",
+  "common.edit-time": "更新時間",
+  "common.new-time": "創建時間",
+  "common.edit": "操作",
+  "common.total": "總量",
+  "common.yes": "是",
+  "common.no": "否",
+  "common.enable": "開啓",
+  "common.disable": "關閉",
+  "common.copy": "點擊複製",
+  "common.copy.button": "複製",
+  "common.mute": "靜音",
+  "common.notify.no-select-edit": "未選中任何待編輯項!",
+  "common.notify.one-select-edit": "只能對一個選中項進行編輯!",
+  "common.confirm.delete": "請確認是否刪除!",
+  "common.notify.no-select-delete": "未選中任何待刪除項!",
+  "common.notify.no-select-export": "未選中任何待導出項!",
+  "common.confirm.delete-batch": "請確認是否批量刪除!",
+  "common.notify.delete-success": "刪除成功!",
+  "common.notify.delete-fail": "刪除失敗!",
+  "common.notify.new-success": "新增成功!",
+  "common.notify.new-fail": "新增失敗!",
+  "common.notify.apply-success": "應用成功!",
+  "common.notify.apply-fail": "應用失敗!",
+  "common.notify.operate-success": "操作成功!",
+  "common.notify.operate-fail": "操作失敗!",
+  "common.notify.monitor-fail": "查詢此監控定義詳情失敗!",
+  "common.notify.edit-success": "修改成功!",
+  "common.notify.edit-fail": "修改失敗!",
+  "common.notify.mark-success": "標記成功!",
+  "common.notify.mark-fail": "標記失敗!",
+  "common.notify.no-select-cancel": "未選中任何待取消項!",
+  "common.confirm.cancel-batch": "請確認是否批量取消監控!",
+  "common.confirm.cancel": "請確認是否取消監控!",
+  "common.notify.cancel-success": "取消監控成功!",
+  "common.notify.cancel-fail": "取消監控失敗!",
+  "common.notify.no-select-enable": "未選中任何待啓用監控項!",
+  "common.confirm.enable-batch": "請確認是否批量啓用監控!",
+  "common.confirm.enable": "請確認是否啓用監控!",
+  "common.notify.enable-success": "啓用監控成功!",
+  "common.notify.enable-fail": "啓用監控失敗!",
+  "common.confirm.clear-cache": "請確認是否清理緩存!",
+  "common.notify.clear-success": "清理成功!",
+  "common.notify.clear-fail": "清理失敗!",
+  "common.notify.export-success": "導出成功!",
+  "common.notify.export-fail": "導出失敗!",
+  "common.notify.import-success": "導入成功!",
+  "common.notify.import-fail": "導入失敗!",
+  "common.notify.copy-success": "複製成功!",
+  "common.week.7": "星期日",
+  "common.week.1": "星期一",
+  "common.week.2": "星期二",
+  "common.week.3": "星期三",
+  "common.week.4": "星期四",
+  "common.week.5": "星期五",
+  "common.week.6": "星期六",
+  "common.button.ok": "確定",
+  "common.button.detect": "測試",
+  "common.button.cancel": "取消",
+  "common.button.return": "返回",
+  "common.button.help": "幫助",
+  "common.button.new": "新增",
+  "common.button.import": "导入",
+  "common.button.export": "导出",
+  "common.button.edit": "編輯",
+  "common.button.setting": "配置",
+  "common.button.delete": "刪除",
+  "common.time.unit.second": "秒",
+  "common.file.select": "選擇文件",
+  "app.theme.default": "淺色主題",
+  "app.theme.dark": "深色主題",
+  "app.theme.compact": "緊湊主題",
+  "app.role.admin": "管理員",
+  "app.lock": "解除鎖定",
+  "app.lock.placeholder": "輸入任意解鎖",
+  "app.passport.desc": "易用友好的開源實時監控系統",
+  "app.passport.intro-1": "開源、高效能、分散式的",
+  "app.passport.intro-2": "即時監控",
+  "app.login.message-need-identifier": "請輸入用戶名",
+  "app.login.message-need-credential": "請輸入密碼",
+  "app.login.message-invalid-credentials": "賬戶或密碼錯誤",
+  "app.login.need-change-password": "請及時更新初始默認密碼!",
+  "app.login.tab-login-credentials": "登錄 HertzBeat",
+  "app.login.remember-me": "自動登錄",
+  "app.login.login": "登錄",
+  "app.login.notify": "请先登錄!",
+  "app.login.explore.cloud": "探索雲端服務",
+  "app.login.explore.cloud.detail": "點擊探索 HertzBeat 監控雲端服務",
+  "label.new": "新增標簽",
+  "label.edit": "編輯標簽",
+  "label.search": "搜索標簽",
+  "label.delete": "刪除標簽",
+  "tag": "標簽",
+  "label.setting": "管理標簽",
+  "label.id": "ID",
+  "tag.name": "標簽名",
+  "tag.value": "標簽值",
+  "tag.color": "顔色",
+  "tag.description": "標簽描述",
+  "tag.update-time": "更新時間",
+  "label.display": "效果",
+  "label.bind": "綁定標簽",
+  "label.bind.tip": "您可以使用標簽進行監控資源的分類管理, 例如給資源分別綁定生産環境、測試環境的標簽。",
+  "labels.help": "標簽在 HertzBeat 中無處不在，我們可以應用標簽在資源分組，規則下的標簽匹配等場景。標簽管理用于對標簽的統壹管理維護，包含新增，刪除，編輯等操作。<br>例如：您可以使用標簽對監控資源進行分類管理，給資源分別綁定生産環境、測試環境的標簽，在告警通知時通過標簽匹配不同的通知人。",
+  "labels.help.link": "https://hertzbeat.apache.org/zh-cn/docs/",
+  "plugin.help": "在HertzBeat中，我們可以透過外掛機制在警告後執行一些除通知以外的其他操作。外掛程式管理用於對外掛程式的統一管理，包括上傳和，啟用停用等操作。<br>例如：您可以透過外掛機制實現在警告出現後，執行特定的腳本或SQL等操作。",
+  "plugin.help.link": "https://hertzbeat.apache.org/zh-cn/docs/help/plugin",
+  "plugin.upload": "上傳外掛",
+  "plugin.name": "插件名稱",
+  "plugin.type": "插件類型",
+  "plugin.status": "啟用狀態",
+  "plugin.jar.file": "Jar包",
+  "plugin.delete": "刪除插件",
+  "plugin.type.POST_ALERT": "告警後",
+  "plugin.type.POST_COLLECT": "採集後",
+  "plugin.search": "搜尋插件",
+  "plugin.edit": "編輯插件",
+  "plugin.param.edit": "編輯參數",
+  "define.help": "監控模版定義每一個監控類型，類型的參數變量，指標信息，採集協議等。您可根據需求在下拉功能表中選擇已有監控模版進行修改。右下區域為編輯區，左下區域為對照區。<br>您也可以點擊“<i>新增監控類型</i>”來自定義新的的監控類型，現支持<a href='https://hertzbeat.apache.org/zh-cn/docs/advanced/extend-http'> HTTP協議</a>，<a href='https://hertzbeat.apache.org/zh-cn/docs/advanced/extend-jdbc'>JDBC協定</a>，<a href='https://hertzbeat.apache.org/zh-cn/docs/advanced/extend-ssh'>SSH協定</a>，<a href='https://hertzbeat.apache.org/zh-cn/docs/advanced/extend-jmx'> JMX協定</a>，<a href='https://hertzbeat.apache.org/zh-cn/docs/advanced/extend-snmp'> SNMP協定</a>，<a  href='https://hertzbeat.apache.org/zh-cn/docs/template'>點擊查看監控範本</a>。",
+  "define.help.link": "https://hertzbeat.apache.org/zh-cn/docs/advanced/extend-point/",
+  "define.save-apply": "保存並應用",
+  "define.delete": "刪除 {{app}}",
+  "define.delete.confirm": "請確認是否刪除 {{app}} 監控類型? 刪除後無法添加此類監控。",
+  "define.new": "新增監控類型",
+  "define.new.code": "# 請在此通過編寫YML內容來定義新的監控類型, 參考文檔: https://hertzbeat.apache.org/docs/advanced/extend-point ",
+  "define.save-apply.no-code": "監控類型定義內容不能為空。",
+  "define.save-apply.confirm": "請確認是否保存修改並應用此監控類型定義? 這會影響到您的監控內容。",
+  "define.hide-true.tip": "主菜單未顯示此監控類型,是否顯示",
+  "define.hide-true.confirm": "確認是否顯示此菜單?",
+  "define.hide-false.tip": "主菜單已顯示此監控類型,是否隱藏",
+  "define.hide-false.confirm": "確認是否隱藏此菜單?",
+  "settings.server": "消息服務配置",
+  "settings.server.email": "郵件服務器",
+  "settings.server.email.setting": "配置郵件服務器",
+  "settings.server.sms": "短信配置",
+  "settings.server.sms.setting": "配置短信參數",
+  "settings.system-config": "系統配置",
+  "settings.system-config.locale": "系統語言",
+  "settings.system-config.locale.zh_CN": "簡體中文(zh_CN)",
+  "settings.system-config.locale.zh_TW": "繁體中文(zh_TW)",
+  "settings.system-config.locale.en_US": "英語(en_US)",
+  "settings.system-config.timezone": "系統時區",
+  "settings.system-config.theme": "系統主題",
+  "settings.system-config.theme.default": "淺色主題",
+  "settings.system-config.theme.dark": "深色主題",
+  "settings.system-config.theme.compact": "緊湊主題",
+  "settings.system-config.ok": "確認更新",
+  "settings.object-store": "文件服務配置",
+  "settings.object-store.type": "文件服務提供商",
+  "settings.object-store.type.file": "本地文件（默認）",
+  "settings.object-store.type.database": "本地數據庫",
+  "settings.object-store.type.obs": "華為雲OBS",
+  "settings.object-store.obs.accessKey": "AccessKey",
+  "settings.object-store.obs.accessKey.placeholder": "華為雲的AccessKeyId",
+  "settings.object-store.obs.secretKey": "SecretKey",
+  "settings.object-store.obs.secretKey.placeholder": "華為雲的AccessKeySecret",
+  "settings.object-store.obs.bucketName": "Bucket",
+  "settings.object-store.obs.bucketName.placeholder": "華為雲OBS中您創建的Bucket名稱",
+  "settings.object-store.obs.endpoint": "EndPoint",
+  "settings.object-store.obs.endpoint.placeholder": "華為雲OBS地域域名，不包括Bucket名",
+  "settings.object-store.obs.savePath": "保存路徑",
+  "settings.object-store.obs.savePath.placeholder": "備份文件保存路徑, 默認是hertzbeat",
+  "collector": "採集器",
+  "collector.name": "採集器名称",
+  "collector.name.placeholder": "請配置待部署的採集器名稱，注意需保證唯一性",
+  "collector.status": "運行狀態",
+  "collector.task": "总任務數量",
+  "collector.mode": "運行模式",
+  "collector.mode.public": "公共集群模式",
+  "collector.mode.private": "私有云邊模式",
+  "collector.start-time": "啟動時間",
+  "collector.ip": "IP地址",
+  "collector.version": "版本",
+  "collector.node": "節點名稱",
+  "collector.pinned": "固定任務",
+  "collector.dispatched": "調度任務",
+  "collector.delete": "刪除採集器",
+  "collector.deploy": "部署採集器",
+  "collector.deploy.identity": "採集器令牌(IDENTITY)",
+  "collector.deploy.identity.tip": "請注意此令牌對應採集器的唯一性，請妥善保存。",
+  "collector.deploy.ok": "生成令牌和部署命令",
+  "collector.deploy.close": "關閉頁面-我已保存令牌",
+  "collector.deploy.docker": "通過 Docker 方式部署",
+  "collector.deploy.docker.help": "# 在Docker環境下執行如下命令",
+  "collector.deploy.docker.help.1": "# docker run -d : 通過Docker啟動一個在後台運行的容器",
+  "collector.deploy.docker.help.2": "# -e IDENTITY=xxx : 設置採集器的標識令牌",
+  "collector.deploy.docker.help.3": "# -e MANAGER_HOST=127.0.0.1 : 設置連接的主HertzBeat服務地址",
+  "collector.deploy.docker.help.4": "# -e MODE=public : 設定運作模式(public or private), 公有叢集模式或私有雲邊模式",
+  "collector.deploy.docker.help.5": "# --name hertzbeat-collector : 命名容器名稱 hertzbeat-collector",
+  "collector.deploy.docker.help.6": "# apache/hertzbeat-collector : 官方應用鏡像源,超时可替换为 quay.io/tancloud/hertzbeat-collector",
+  "collector.deploy.package": "通過 安裝包 方式部署",
+  "collector.deploy.package.github": "下載安裝包-Github",
+  "collector.deploy.package.gitee": "下載安裝包-Gitee",
+  "collector.deploy.package.help": "# 下載系統環境對應安裝包 hertzbeat-collector-xx.tar.gz",
+  "collector.deploy.package.help.1": "# 解壓並配置文件 hertzbeat-collector/config/application.yml",
+  "collector.deploy.package.help.2": "# 替換文件中的 IDENTITY MANAGER_HOST MODE 參數, 如下。",
+  "collector.deploy.package.help.3": "# 啟動腳本 bin/startup.sh 或者 startup.bat(windows) 來啟動採集器進程。",
+  "collector.online": "上線採集器",
+  "collector.offline": "下線採集器",
+  "collector.confirm.online": "請確認是否上線此採集器!",
+  "collector.confirm.offline": "請確認是否下線此採集器!",
+  "collector.confirm.online-batch": "請確認是否批量上線採集器!",
+  "collector.confirm.offline-batch": "請確認是否批量下線採集器!",
+  "collector.notify.no-select-online": "未選中任何待上線項!",
+  "collector.notify.no-select-offline": "未選中任何待下線項!",
+  "collector.help": "采集集群用于已注冊的監控采集器集群節點管理，展示當前采集器集群狀態和調度任務分布，支持對采集器的部署，刪除，上線，下線等批量操作。<br>除了使用內置采集器外，您可以注冊多個采集器應用于<strong>高性能集群</strong>或<strong>雲邊協同</strong>場景。",
+  "collector.help.link": "https://hertzbeat.apache.org/docs/help/guide",
+  "about.title": "Apache HertzBeat (incubating) 是一個開源實時監控系統，無需Agent，性能集羣，兼容Prometheus，自定義監控和狀態頁構建能力。",
+  "about.point.1": "一站式監控告警通知，支持應用服務，數據庫，操作系統，中間件，雲原生，網絡等。",
+  "about.point.2": "易用友好，無需 Agent，全頁面操作，鼠標點一點就能監控告警。",
+  "about.point.3": "強大監控模版能力，自定義監控任何您想要的指標。",
+  "about.point.4": "高性能，採集器集群橫向擴展，支持多隔離網絡監控，雲邊協同。",
+  "about.point.5": "自由的閾值規則，郵件釘釘微信飛書短信等消息及時送達。",
+  "about.point.6": "提供強大的狀態頁構建功能，輕鬆向用戶傳達您產品服務的實時狀態。",
+  "about.help": "HertzBeat 的強大自定義，多類型支持，高性能，易擴展，希望能幫助用戶快速構建自有監控系統。",
+  "about.github": "Github",
+  "about.gitee": "Gitee",
+  "about.issue": "反饋問題",
+  "about.pr": "貢獻代碼",
+  "about.discuss": "討論交流",
+  "about.doc": "文檔中心",
+  "about.upgrade": "升級指引",
+  "about.star": "點贊支持",
+  "status.page": "狀態頁面",
+  "status.org.name": "組織名稱",
+  "status.org.name.tip": "狀態頁面展示的組織團隊名稱,如 TanCloud",
+  "status.org.desc": "組織介紹",
+  "status.org.desc.tip": "狀態頁面展示的組織信息介紹",
+  "status.org.logo": "標誌圖片",
+  "status.org.logo.tip": "請配置組織Logo圖片URL地址,建議SVG格式",
+  "status.org.home": "網站鏈接",
+  "status.org.home.tip": "請配置組織的網站主頁地址",
+  "status.org.feedback": "反饋地址",
+  "status.org.feedback.tip": "請配置用戶報告反饋問題的地址",
+  "status.org.color": "主題顏色",
+  "status.org.color.tip": "請配置狀態頁面主題背景顏色",
+  "status.org.state": "組織狀態",
+  "status.public.feedback": "問題反饋",
+  "status.public.org.state.0": "所有系統正常運行",
+  "status.public.org.state.1": "部分系統運行異常",
+  "status.public.org.state.2": "所有系統運行異常",
+  "status.public.today": "今天",
+  "status.public.30-day": "30天前",
+  "status.public.power-by": "由 Apache HertzBeat 提供構建. Star Us !",
+  "status.public.to-incident": "事件信息",
+  "status.public.to-component": "狀態頁面",
+  "status.incident": "維護事件",
+  "status.incident.name": "事件名稱",
+  "status.incident.name.tip": "請簡短說明當前事件標題",
+  "status.incident.history": "事件歷史",
+  "status.incident.state": "過程狀態",
+  "status.incident.state.0": "調查中",
+  "status.incident.state.1": "已確認",
+  "status.incident.state.2": "觀察中",
+  "status.incident.state.3": "已修復",
+  "status.incident.message": "發佈消息",
+  "status.incident.message.tip.0": "我們正在調查此事件問題，請稍後再查看更新。",
+  "status.incident.message.tip.1": "我們已確認故障發生的原因，正在處理中。",
+  "status.incident.message.tip.2": "我們正在監控該事件，觀察處理效果",
+  "status.incident.message.tip.3": "該事件已被修復，謝謝理解支持。",
+  "status.incident.message-latest": "最新消息",
+  "status.incident.component": "影響組件",
+  "status.incident.new": "發佈事件",
+  "status.incident.update": "更新事件",
+  "status.incident.delete": "刪除事件",
+  "status.incident.public.start-at": "開始於",
+  "status.incident.public.update-at": "更新於",
+  "status.incident.public.process-time": "過程時間",
+  "status.component": "服務組件",
+  "status.component.name": "服務組件",
+  "status.component.name.tip": "配置狀態頁展示的組件服務名稱,如網關Gateway",
+  "status.component.desc": "組件描述",
+  "status.component.desc.tip": "配置組件服務的描述信息",
+  "status.component.state": "組件狀態",
+  "status.component.new": "新增組件",
+  "status.component.edit": "編輯組件",
+  "status.component.delete": "刪除組件",
+  "status.component.tag": "匹配標籤",
+  "status.component.tag.tip": "狀態計算關聯標籤，使用標籤關聯的所有監控可用性狀態作爲數據來計算此組件服務狀態。",
+  "status.component.method": "狀態統計方式",
+  "status.component.method.tip": "計算組件服務狀態的方式，根據標籤關聯監控可用性自動計算，或者手動配置狀態。",
+  "status.component.method.0": "自動計算",
+  "status.component.method.1": "手動設置",
+  "status.component.config-state": "配置狀態",
+  "status.component.config-state.tip": "當狀態統計方式爲手動時，配置的組件服務狀態。",
+  "status.component.state.0": "正常",
+  "status.component.state.1": "異常",
+  "status.component.state.2": "未知",
+  "status.component.notify.need-org": "請先配置您的組織信息！",
+  "status.help": "基於 HertzBeat 快速構建強大的狀態頁，輕鬆向用戶傳達您產品服務的實時狀態。例如 Github 提供的服務狀態頁 <a href='https://www.githubstatus.com'>https://www.githubstatus.com</a>。<br>支持狀態頁組件狀態和監控狀態聯動同步，故障事件維護管理機制等。提高您的透明度，專業度和用戶信任，降低溝通成本。",
+  "status.help.link": "https://hertzbeat.apache.org/zh-cn/docs/help/status",
+  "validation.email.required": "請輸入郵箱地址！",
+  "validation.email.wrong-format": "郵箱地址格式錯誤！",
+  "validation.email.invalid": "無效的郵箱地址！",
+  "validation.phone.invalid": "無效的手機號！",
+  "validation.verification-code.invalid": "無效的驗證碼,應是6位數字！",
+  "validation.password.required": "請輸入密碼！",
+  "validation.password.twice": "兩次輸入的密碼不匹配!",
+  "validation.password.strength.msg": "請至少輸入 6 個字符。請不要使用容易被猜到的密碼。",
+  "validation.password.strength.strong": "強度:強",
+  "validation.password.strength.medium": "強度:中",
+  "validation.password.strength.short": "強度:太短",
+  "validation.confirm-password.required": "請確認密碼！",
+  "validation.phone-number.required": "請輸入手機號！",
+  "validation.phone-number.wrong-format": "手機號格式錯誤！",
+  "validation.verification-code.required": "請輸入驗證碼！",
+  "validation.title.required": "請輸入標題",
+  "validation.date.required": "請選擇起止日期",
+  "validation.goal.required": "請輸入目標描述",
+  "validation.standard.required": "請輸入衡量標准",
+  "validation.required": "請填充必填項! ",
+  "alert.setting.template.vars.app": "應用名稱",
+  "alert.setting.template.vars.metrics": "指標名稱",
+  "alert.setting.template.vars.instance": "实例ID",
+  "alert.setting.template.vars.value": "觸發值",
+  "alert.setting.template.vars.threshold": "閾值表達式",
+  "alert.setting.template.vars.tags": "標籤信息",
+  "alert.setting.template.vars.time": "觸發時間",
+  "alert.setting.template.vars.tip": "插入指標或操作符",
+  "alert.setting.expr.operator.equals": "等於",
+  "alert.setting.expr.operator.not-equals": "不等於",
+  "alert.setting.expr.operator.greater": "大於",
+  "alert.setting.expr.operator.greater-equals": "大於等於",
+  "alert.setting.expr.operator.less": "小於",
+  "alert.setting.expr.operator.less-equals": "小於等於",
+  "alert.setting.expr.operator.and": "與",
+  "alert.setting.expr.operator.or": "或",
+  "alert.setting.expr.operator.brackets": "括號",
+  "alert.setting.type.realtime.desc": "實時計算採集的指標數據，觸發閾值時立即告警",
+  "alert.setting.type.periodic.desc": "週期性執行 PromQL 查詢，根據結果觸發閾值告警",
+  "alert.setting.period": "執行週期",
+  "alert.setting.period.tip": "週期性執行閾值計算的時間間隔，單位秒，最小60秒",
+  "alert.setting.period.placeholder": "請輸入執行週期，最小60秒",
+  "alert.setting.bind.monitors": "關聯監控",
+  "alert.setting.bind.monitors.tip": "配置此閾值規則應用到指定監控任務,默認不關聯應用全部",
+  "alert.setting.bind.available": "可選監控",
+  "alert.setting.bind.selected": "已選監控",
+  "alert.setting.bind.manage": "關聯監控",
+  "alert.setting.bind.need-save": "請先選擇指標類型再進行監控關聯",
+  "alert.group-converge.group-wait": "等待時間",
+  "alert.group-converge.group-interval": "間隔時間",
+  "alert.group-converge.repeat-interval": "重複間隔",
+  "alert.group-converge.seconds": "秒",
+  "alert.group-converge.group-labels": "分組標籤",
+  "alert.group-converge.group-labels.add": "添加標籤",
+  "alert.group-converge.group-labels.input": "輸入自定義標籤後按回車",
+  "alert.group-converge.group-labels.placeholder": "請輸入標籤",
+  "alert.group-converge.name.tip": "標識此分組策略的名稱，需要唯一",
+  "alert.group-converge.group-labels.tip": "根據告警標籤Key對告警消息進行分組，支持配置多個標籤Key，如 alertname、severity、instance 等",
+  "alert.group-converge.group-wait.tip": "新告警產生後等待時間，在此時間內收到的相同告警將被分組，默認30秒",
+  "alert.group-converge.group-interval.tip": "發送分組告警通知的最小時間間隔，避免告警通知過於頻繁，默認5分鐘",
+  "alert.group-converge.repeat-interval.tip": "重複告警的最小通知間隔，對於持續觸發的告警，避免重複發送通知，默認4小時",
+  "alert.inhibit.source_labels": "源標籤",
+  "alert.inhibit.source_labels.tip": "當告警包含這些標籤時，將會抑制目標告警",
+  "alert.inhibit.target_labels": "目標標籤",
+  "alert.inhibit.target_labels.tip": "匹配這些標籤的告警將被抑制",
+  "alert.inhibit.equal_labels": "相等標籤",
+  "alert.inhibit.equal_labels.tip": "源告警和目標告警這些標籤Key和對應值必須相等，常用標籤Key如 alertname、instance、severity 等",
+  "alert.inhibit.equal_labels.placeholder": "輸入標籤名稱後按回車，或從下拉列表選擇",
+  "alert.inhibit.equal_labels.more": "還有 {{count}} 個標籤",
+  "alert.inhibit.equal_labels.common": "常用標籤",
+  "alert.inhibit.equal_labels.custom": "自定義標籤",
+  "alert.inhibit.name": "抑制規則名稱",
+  "alert.inhibit.name.tip": "標識此抑制規則的名稱，需要唯一",
+  "alert.inhibit.enable": "是否啟用",
+  "alert.inhibit.enable.tip": "是否啟用此抑制規則",
+  "alert.inhibit.new": "新增抑制規則",
+  "alert.inhibit.edit": "編輯抑制規則",
+  "alert.inhibit.delete": "刪除抑制規則",
+  "alert.help.inhibit": "告警抑制用於配置告警之間的抑制關係。當某個告警發生時，可以抑制其他告警的產生。例如，當服務器宕機時，可以抑制該服務器上的所有告警。",
+  "alert.help.inhibit.link": "https://hertzbeat.apache.org/zh-cn/docs/help/alert_inhibit",
+  "common.button.confirm": "確認",
+  "annotation": "註解",
+  "annotation.bind": "綁定註解",
+  "annotation.bind.tip": "您可以使用註解對實體信息進行標記，例如給資源綁定重要事件的註解。",
+  "label": "標籤",
+  "expand": "展開",
+  "collapse": "收起"
 }

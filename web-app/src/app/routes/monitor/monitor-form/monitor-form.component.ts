@@ -17,10 +17,14 @@
  * under the License.
  */
 
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, Inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { I18NService } from '@core';
+import { ALAIN_I18N_TOKEN } from '@delon/theme';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 import { Collector } from '../../../pojo/Collector';
+import { Monitor } from '../../../pojo/Monitor';
 import { Param } from '../../../pojo/Param';
 import { ParamDefine } from '../../../pojo/ParamDefine';
 
@@ -30,7 +34,7 @@ import { ParamDefine } from '../../../pojo/ParamDefine';
   styleUrls: ['./monitor-form.component.less']
 })
 export class MonitorFormComponent implements OnChanges {
-  @Input() monitor!: any;
+  @Input() monitor!: Monitor;
   @Input() grafanaDashboard!: any;
   @Input() loading!: boolean;
   @Input() loadingTip!: string;
@@ -51,7 +55,7 @@ export class MonitorFormComponent implements OnChanges {
 
   hasAdvancedParams: boolean = false;
 
-  constructor() {}
+  constructor(private notifySvc: NzNotificationService, @Inject(ALAIN_I18N_TOKEN) private i18nSvc: I18NService) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.advancedParams && changes.advancedParams.currentValue !== changes.advancedParams.previousValue) {
@@ -152,9 +156,11 @@ export class MonitorFormComponent implements OnChanges {
       if (portParam) {
         if (booleanValue && (portParam.paramValue == null || parseInt(portParam.paramValue) === 80)) {
           portParam.paramValue = 443;
+          this.notifySvc.info(this.i18nSvc.fanyi('common.notice'), this.i18nSvc.fanyi('monitors.new.notify.change-to-https'));
         }
         if (!booleanValue && (portParam.paramValue == null || parseInt(portParam.paramValue) === 443)) {
           portParam.paramValue = 80;
+          this.notifySvc.info(this.i18nSvc.fanyi('common.notice'), this.i18nSvc.fanyi('monitors.new.notify.change-to-http'));
         }
       }
     }
