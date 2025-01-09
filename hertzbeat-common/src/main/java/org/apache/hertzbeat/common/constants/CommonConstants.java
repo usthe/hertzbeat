@@ -341,6 +341,11 @@ public interface CommonConstants {
     String CACHE_ALERT_INHIBIT = "alert_inhibit";
 
     /**
+     * cache key script
+     */
+    String CACHE_SCRIPT = "script";
+
+    /**
      * collector status online 0
      */
     byte COLLECTOR_STATUS_ONLINE = 0;

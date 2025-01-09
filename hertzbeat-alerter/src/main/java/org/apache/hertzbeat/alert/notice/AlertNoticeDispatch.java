@@ -21,6 +21,8 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.alert.AlerterWorkerPool;
 import org.apache.hertzbeat.common.entity.alerter.GroupAlert;
@@ -28,9 +30,12 @@ import org.apache.hertzbeat.common.entity.alerter.NoticeReceiver;
 import org.apache.hertzbeat.common.entity.alerter.NoticeRule;
 import org.apache.hertzbeat.common.entity.alerter.NoticeTemplate;
 import org.apache.hertzbeat.alert.service.NoticeConfigService;
+import org.apache.hertzbeat.common.script.ScriptExecutor;
+import org.apache.hertzbeat.common.support.SpringContextHolder;
 import org.apache.hertzbeat.plugin.PostAlertPlugin;
 import org.apache.hertzbeat.plugin.Plugin;
 import org.apache.hertzbeat.plugin.runner.PluginRunner;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -45,7 +50,7 @@ public class AlertNoticeDispatch {
     private final AlertStoreHandler alertStoreHandler;
     private final Map<Byte, AlertNotifyHandler> alertNotifyHandlerMap;
     private final PluginRunner pluginRunner;
-    private final OfficialPluginServiceFactory officialPluginServiceFactory;
+//    private final OfficialPluginServiceFactory officialPluginServiceFactory;
 
     public AlertNoticeDispatch(AlerterWorkerPool workerPool,
                                NoticeConfigService noticeConfigService,
@@ -56,7 +61,7 @@ public class AlertNoticeDispatch {
         this.alertStoreHandler = alertStoreHandler;
         this.pluginRunner = pluginRunner;
         alertNotifyHandlerMap = Maps.newHashMapWithExpectedSize(alertNotifyHandlerList.size());
-        this.officialPluginServiceFactory = officialPluginServiceFactory;
+//        this.officialPluginServiceFactory = officialPluginServiceFactory;
         alertNotifyHandlerList.forEach(r -> alertNotifyHandlerMap.put(r.type(), r));
     }
 
@@ -129,7 +134,6 @@ public class AlertNoticeDispatch {
                     }));
         }));
     }
-}
 
     public ScriptExecutor getScriptExecutorByType(String type) {
         return getScriptExecutors().get(type);
@@ -141,5 +145,4 @@ public class AlertNoticeDispatch {
         return beansOfType.values().stream()
                 .collect(Collectors.toMap(ScriptExecutor::scriptType, Function.identity()));
     }
-
 }

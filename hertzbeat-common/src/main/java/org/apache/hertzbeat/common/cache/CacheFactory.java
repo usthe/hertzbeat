@@ -99,17 +99,26 @@ public final class CacheFactory {
     }
 
     /**
+     * get script cache
+     * @return caffeine cache
+     */
+    public static Object getScriptCache(String key) {
+        return COMMON_CACHE.get(key);
+    }
+
+    /**
+     * set script cache
+     * @param script script
+     */
+    public static void setScriptCache(String key, Object script) {
+        COMMON_CACHE.put(key, script);
+    }
+
+    /**
      * clear alert define cache
      */
     public static void clearAlertDefineCache() {
         COMMON_CACHE.remove(CommonConstants.CACHE_ALERT_DEFINE);
     }
 
-    /**
-     * get script cache
-     * @return script cache
-     */
-    public static CommonCacheService<Long, Object> getScriptCache() {
-        return SCRIPT_CACHE;
-    }
 }

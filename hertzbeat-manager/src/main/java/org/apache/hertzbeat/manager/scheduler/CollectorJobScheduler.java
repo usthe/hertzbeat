@@ -382,10 +382,10 @@ public class CollectorJobScheduler implements CollectorScheduling, CollectJobSch
                 .setType(ClusterMsg.MessageType.SCRIPT_PLUGIN)
                 .setIdentity(collector)
                 .setDirection(ClusterMsg.Direction.REQUEST)
-                .setMsg(JsonUtil.toJson(script))
+                .setMsg(ByteString.copyFromUtf8(JsonUtil.toJson(script)))
                 .build();
         ClusterMsg.Message result = this.manageServer.sendMsgSync(node.getIdentity(), message);
-        return result.getMsg();
+        return result.getMsg().toStringUtf8();
     }
 
     @Override

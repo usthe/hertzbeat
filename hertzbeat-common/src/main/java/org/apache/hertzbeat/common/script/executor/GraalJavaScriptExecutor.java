@@ -47,13 +47,13 @@ public class GraalJavaScriptExecutor extends ScriptExecutor {
 
     @Override
     public Object executeScript(String script) {
-        Long scriptKey = ScriptUtil.generateScriptKey(script);
-        Source source = (Source) CacheFactory.getScriptCache().get(scriptKey);
+        String scriptKey = ScriptUtil.generateScriptKey(script);
+        Source source = (Source) CacheFactory.getScriptCache(scriptKey);
         if (source == null) {
             log.info("Script not found in cache, compiling...");
             try {
                 compile(script);
-                source = (Source) CacheFactory.getScriptCache().get(scriptKey);
+                source = (Source) CacheFactory.getScriptCache(scriptKey);
             } catch (Exception e) {
                 throw new RuntimeException("Error compiling script", e);
             }
@@ -75,23 +75,18 @@ public class GraalJavaScriptExecutor extends ScriptExecutor {
     }
 
     @Override
-    public void cleanCache() {
-        CacheFactory.getScriptCache().clear();
-    }
-
-    @Override
     public String scriptType() {
         return ScriptTypeConstants.JAVASCRIPT;
     }
 
     @Override
     public Object compile(String script) throws Exception {
-        Long scriptKey = ScriptUtil.generateScriptKey(script);
+        String scriptKey = ScriptUtil.generateScriptKey(script);
         String wrapScript = String.format("function process(){ %s } process();", script);
         Context context = Context.newBuilder().allowAllAccess(true).engine(engine).build();
         Source source = Source.create("js", wrapScript);
         context.parse(source);
-        CacheFactory.getScriptCache().put(scriptKey, source);
+        CacheFactory.setScriptCache(scriptKey, source);
         log.info("Javascript script has been cached with key: {}", scriptKey);
         return wrapScript;
     }

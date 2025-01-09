@@ -61,8 +61,4 @@ public class ScriptExecutorFactory {
 
         return executor;
     }
-
-    public void cleanScriptCache() {
-        this.scriptExecutorMap.forEach((key, value) -> value.cleanCache());
-    }
 }

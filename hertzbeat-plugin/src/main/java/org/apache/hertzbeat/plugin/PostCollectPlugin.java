@@ -23,12 +23,11 @@ import org.apache.hertzbeat.common.entity.plugin.PluginContext;
 /**
  * Post-collect plug-in
  */
-public interface PostCollectPlugin extends Plugin<CollectRep.MetricsData> {
+public interface PostCollectPlugin {
 
     /**
      * do something after collect
      */
-    @Override
     void execute(CollectRep.MetricsData metricsData, PluginContext pluginContext);
 
 }

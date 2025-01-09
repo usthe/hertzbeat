@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Script {
 
-    private Long id;
+    private String id;
 
     private String type;
 

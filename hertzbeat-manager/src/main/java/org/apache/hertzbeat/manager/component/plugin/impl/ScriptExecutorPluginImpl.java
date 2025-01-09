@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hertzbeat.common.entity.alerter.Alert;
+import org.apache.hertzbeat.common.entity.alerter.GroupAlert;
 import org.apache.hertzbeat.common.entity.plugin.PluginContext;
 import org.apache.hertzbeat.common.script.Script;
 import org.apache.hertzbeat.common.script.ScriptExecutor;
@@ -37,8 +37,26 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ScriptExecutorPluginImpl implements PostAlertPlugin {
 
+
+    public ScriptExecutor getScriptExecutorByType(String type) {
+        return getScriptExecutors().get(type);
+    }
+
+    private Map<String, ScriptExecutor> getScriptExecutors() {
+        ApplicationContext context = SpringContextHolder.getApplicationContext();
+        Map<String, ScriptExecutor> beansOfType = context.getBeansOfType(ScriptExecutor.class);
+        return beansOfType.values().stream()
+                .collect(Collectors.toMap(ScriptExecutor::scriptType, Function.identity()));
+    }
+
+    /**
+     * Supports user-defined parameters
+     *
+     * @param alert
+     * @param pluginContext
+     */
     @Override
-    public void execute(Alert alert, PluginContext pluginContext) {
+    public void execute(GroupAlert alert, PluginContext pluginContext) {
         String type = pluginContext.param().getString("script-type", null);
         if (type == null) {
             log.warn("Script type is null");
@@ -61,17 +79,5 @@ public class ScriptExecutorPluginImpl implements PostAlertPlugin {
         applicationContext.publishEvent(new OfficialScriptPluginEvent(applicationContext, script, pluginContext.param().getString("collector", null)));
         log.info("Script has been sent to collector: {}", pluginContext.param().getString("collector", null));
     }
-
-    public ScriptExecutor getScriptExecutorByType(String type) {
-        return getScriptExecutors().get(type);
-    }
-
-    private Map<String, ScriptExecutor> getScriptExecutors() {
-        ApplicationContext context = SpringContextHolder.getApplicationContext();
-        Map<String, ScriptExecutor> beansOfType = context.getBeansOfType(ScriptExecutor.class);
-        return beansOfType.values().stream()
-                .collect(Collectors.toMap(ScriptExecutor::scriptType, Function.identity()));
-    }
-
 }
 

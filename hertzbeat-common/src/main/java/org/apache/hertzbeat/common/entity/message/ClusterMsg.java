@@ -22,7 +22,6 @@
 
 package org.apache.hertzbeat.common.entity.message;
 
-@SuppressWarnings("all")
 public final class ClusterMsg {
   private ClusterMsg() {}
   public static void registerAllExtensions(
@@ -73,7 +72,7 @@ public final class ClusterMsg {
     GO_CLOSE(3),
     /**
      * <pre>
-     * issue cyclic collect task 
+     * issue cyclic collect task
      * </pre>
      *
      * <code>ISSUE_CYCLIC_TASK = 4;</code>
@@ -119,6 +118,14 @@ public final class ClusterMsg {
      * <code>RESPONSE_CYCLIC_TASK_SD_DATA = 9;</code>
      */
     RESPONSE_CYCLIC_TASK_SD_DATA(9),
+    /**
+     * <pre>
+     * official script execute plugin
+     * </pre>
+     *
+     * <code>SCRIPT_PLUGIN = 10;</code>
+     */
+    SCRIPT_PLUGIN(10),
     UNRECOGNIZED(-1),
     ;
 
@@ -156,7 +163,7 @@ public final class ClusterMsg {
     public static final int GO_CLOSE_VALUE = 3;
     /**
      * <pre>
-     * issue cyclic collect task 
+     * issue cyclic collect task
      * </pre>
      *
      * <code>ISSUE_CYCLIC_TASK = 4;</code>
@@ -202,6 +209,14 @@ public final class ClusterMsg {
      * <code>RESPONSE_CYCLIC_TASK_SD_DATA = 9;</code>
      */
     public static final int RESPONSE_CYCLIC_TASK_SD_DATA_VALUE = 9;
+    /**
+     * <pre>
+     * official script execute plugin
+     * </pre>
+     *
+     * <code>SCRIPT_PLUGIN = 10;</code>
+     */
+    public static final int SCRIPT_PLUGIN_VALUE = 10;
 
 
     public final int getNumber() {
@@ -238,6 +253,7 @@ public final class ClusterMsg {
         case 7: return RESPONSE_ONE_TIME_TASK_DATA;
         case 8: return RESPONSE_CYCLIC_TASK_DATA;
         case 9: return RESPONSE_CYCLIC_TASK_SD_DATA;
+        case 10: return SCRIPT_PLUGIN;
         default: return null;
       }
     }
@@ -573,8 +589,6 @@ public final class ClusterMsg {
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
         throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
@@ -1424,14 +1438,15 @@ public final class ClusterMsg {
       "pache.hertzbeat.common.entity.message.Di" +
       "rection\022E\n\004type\030\003 \001(\01627.org.apache.hertz" +
       "beat.common.entity.message.MessageType\022\013" +
-      "\n\003msg\030\004 \001(\014*\363\001\n\013MessageType\022\r\n\tHEARTBEAT" +
+      "\n\003msg\030\004 \001(\014*\206\002\n\013MessageType\022\r\n\tHEARTBEAT" +
       "\020\000\022\r\n\tGO_ONLINE\020\001\022\016\n\nGO_OFFLINE\020\002\022\014\n\010GO_" +
       "CLOSE\020\003\022\025\n\021ISSUE_CYCLIC_TASK\020\004\022\026\n\022DELETE" +
       "_CYCLIC_TASK\020\005\022\027\n\023ISSUE_ONE_TIME_TASK\020\006\022" +
       "\037\n\033RESPONSE_ONE_TIME_TASK_DATA\020\007\022\035\n\031RESP" +
       "ONSE_CYCLIC_TASK_DATA\020\010\022 \n\034RESPONSE_CYCL" +
-      "IC_TASK_SD_DATA\020\t*&\n\tDirection\022\013\n\007REQUES" +
-      "T\020\000\022\014\n\010RESPONSE\020\001b\006proto3"
+      "IC_TASK_SD_DATA\020\t\022\021\n\rSCRIPT_PLUGIN\020\n*&\n\t" +
+      "Direction\022\013\n\007REQUEST\020\000\022\014\n\010RESPONSE\020\001b\006pr" +
+      "oto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

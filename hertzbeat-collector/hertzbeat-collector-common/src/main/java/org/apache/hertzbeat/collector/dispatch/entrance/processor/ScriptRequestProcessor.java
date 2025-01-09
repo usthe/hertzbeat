@@ -17,6 +17,7 @@
 
 package org.apache.hertzbeat.collector.dispatch.entrance.processor;
 
+import com.google.protobuf.ByteString;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hertzbeat.collector.dispatch.entrance.CollectServer;
@@ -41,7 +42,7 @@ public class ScriptRequestProcessor implements NettyRemotingProcessor {
     public ClusterMsg.Message handle(ChannelHandlerContext ctx, ClusterMsg.Message message) {
         String result = null;
         try {
-            Script script = JsonUtil.fromJson(message.getMsg(), Script.class);
+            Script script = JsonUtil.fromJson(message.getMsg().toStringUtf8(), Script.class);
             if (script != null) {
                 result = String.valueOf(collectServer.getScriptExecutor().executeScript(script.getContent()));
                 log.info("ScriptProcessor execute script result: {}", result);
@@ -52,7 +53,7 @@ public class ScriptRequestProcessor implements NettyRemotingProcessor {
         return ClusterMsg.Message.newBuilder()
                 .setIdentity(message.getIdentity())
                 .setDirection(ClusterMsg.Direction.RESPONSE)
-                .setMsg(result)
+                .setMsg(ByteString.copyFromUtf8(result))
                 .build();
     }
 }

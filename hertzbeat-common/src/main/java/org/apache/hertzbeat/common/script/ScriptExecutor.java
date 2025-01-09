@@ -29,7 +29,6 @@ public abstract class ScriptExecutor {
 
     public abstract Object executeScript(String scriptKey) throws Exception;
 
-    public abstract void cleanCache();
 
     public abstract String scriptType();
 

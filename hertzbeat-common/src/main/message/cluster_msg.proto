@@ -53,7 +53,7 @@ enum MessageType
     // response cyclic service discovery data
     RESPONSE_CYCLIC_TASK_SD_DATA = 9;
     // official script execute plugin
-     SCRIPT_PLUGIN = 10;
+    SCRIPT_PLUGIN = 10;
 }
 
 enum Direction {
